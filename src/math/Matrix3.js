@@ -1,7 +1,7 @@
 /* eslint-disable max-params */
 /* eslint-disable max-len */
-import pool from "./../system/pooling.js";
-import { EPSILON } from "./math.js";
+import pool from "../system/pooling.js";
+import { EPSILON } from "./Math.js";
 
 /**
  * @classdesc

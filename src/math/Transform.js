@@ -1,34 +1,26 @@
-import Matrix2d from "./Matrix2";
-import ObservableVector2d from "./ObservableVector2";
+import Matrix2d from "./Matrix2d";
+import Vector2 from "./vector2";
 
 export default class Transform {
+
+  /**
+   * @param {Matrix2d} projection - The projection matrix.
+   */
   constructor(projection) {
-    this.projection = projection;
+    this._projection = projection;
     this.worldTransform = new Matrix2d();
     this.worldTransform.identity();
     this.localTransform = new Matrix2d();
     this.localTransform.identity();
 
-    this.position = new ObservableVector2d(0, 0, {
-      onUpdate : this.onChange,
-      scope    : this,
-    });
+    this.position = new Vector2();
+    this.scale = new Vector2(1, 1);
 
-    this.scale = new ObservableVector2d(1, 1, {
-      onUpdate : this.onChange,
-      scope    : this,
-    });
-
-    this.pivot = new ObservableVector2d(0, 0, {
-      onUpdate : this.onChange,
-      scope    : this,
-    });
+    this.pivot = new Vector2();
 
     this._rotation = 0;
-
     this._width = 0;
     this._height = 0;
-
     this._wPivot = 0;
     this._hPivot = 0;
 
@@ -49,10 +41,11 @@ export default class Transform {
   /** Updates the local transformation matrix. */
   updateLocalTransform() {
     const lt = this.localTransform;
-    lt.scale(this._width * this.scale.x, this._height * this.scale.y);
+    lt.translate(this.pivot);
+    lt.translate(this.position);
     lt.rotate(this._rotation);
-    lt.tx = this.position.x - ((this.pivot.x * lt.a) + (this.pivot.y * lt.c));
-    lt.ty = this.position.y - ((this.pivot.x * lt.b) + (this.pivot.y * lt.d));
+    lt.scale((this._width || 1) * this.scale.x, (this._height || 1) * this.scale.y);
+    lt.translate(-this.pivot.x, -this.pivot.y);
     this._currentLocalID = this._localID;
   }
 
@@ -63,31 +56,26 @@ export default class Transform {
      */
   updateTransform(parentTransform) {
     const lt = this.localTransform;
-
     this.updateLocalTransform();
 
     if (parentTransform) {
-      // concat the parent matrix with the objects transform.
-      const pt = parentTransform;
-      const wt = this.worldTransform;
-
-      wt.scale(this._width * this.scale.x * pt.scale.x, this._height * this.scale.y * pt.scale.y);
-      wt.rotate(this._rotation + pt.rotation);
-
-
-      wt.tx = pt.worldTransform.tx - ((this.pivot.x * wt.a) + (this.pivot.y * wt.c))
-          + this.position.x
-          + (pt.pivot.x * pt.worldTransform.a + pt.pivot.y * pt.worldTransform.c);
-      wt.ty = pt.worldTransform.ty - ((this.pivot.x * wt.b) + (this.pivot.y * wt.d))
-          + this.position.y
-          + (pt.pivot.x * pt.worldTransform.b + pt.pivot.y * pt.worldTransform.d);
-
-      console.log(wt.toArray(true));
-
+      let wt = this.worldTransform;
+      // wt.copyFrom(parentTransform.worldTransform );
+      // wt.multiply(lt);
+      wt.translate(parentTransform.pivot.x, parentTransform.pivot.y);
+      wt.translate(this.pivot.x - parentTransform.pivot.x, this.pivot.y - parentTransform.pivot.y);
+      wt.translate(parentTransform.position.x + this.position.x, parentTransform.position.y + this.position.y);
+      wt.rotate(parentTransform.rotation + this._rotation);
+      wt.scale((this._width || 1) * this.scale.x * parentTransform.scale.x,
+        (this._height || 1) * this.scale.y * parentTransform.scale.y);
+      wt.translate(parentTransform.pivot.x - this.pivot.x, parentTransform.pivot.y - this.pivot.y);
+      wt.translate(-parentTransform.pivot.x, -parentTransform.pivot.y);
     }
     else {
       this.worldTransform.copyFrom(lt);
     }
+
+    console.log(this.worldTransform.array);
   }
 
   get rotation() {
@@ -120,4 +108,15 @@ export default class Transform {
     }
   }
 
+  get projection() {
+    return this._projection;
+  }
+
+  set projection(value) {
+    if (value && this._projection !== value) {
+      this._projection = value;
+      this.worldTransform.multiply(this._projection);
+      this.localTransform.multiply(this._projection);
+    }
+  }
 }

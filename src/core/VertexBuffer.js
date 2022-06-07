@@ -1,10 +1,10 @@
 export default class VertexBuffer {
 
   static verticesOfSquare = [
-    1, 1, 0.0,
-    0, 1, 0.0,
-    1, 0, 0.0,
-    0, 0, 0.0,
+    1, 1, 0,
+    0, 1, 0,
+    1, 0, 0,
+    0, 0, 0,
   ];
 
   static vertexBuffer = null;

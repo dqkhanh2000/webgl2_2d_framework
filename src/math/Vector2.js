@@ -5,7 +5,7 @@ import pool from "../system/pooling.js";
  * @classdesc
  * a generic 2D Vector Object
  */
-class Vector2d {
+class Vector2 {
   /**
      * @param {number} [x=0] x value of the vector
      * @param {number} [y=0] y value of the vector
@@ -40,7 +40,7 @@ class Vector2d {
      * @function
      * @param {number} x
      * @param {number} y
-     * @returns {Vector2d} Reference to this object for method chaining
+     * @returns {Vector2} Reference to this object for method chaining
      */
   set(x, y) {
     if (x !== +x || y !== +y) {
@@ -48,25 +48,6 @@ class Vector2d {
         "invalid x,y parameters (not a number)",
       );
     }
-
-    /**
-         * x value of the vector
-         * @public
-         * @type {number}
-         * @name x
-         * @memberof Vector2d
-         */
-    // this.x = x;
-
-    /**
-         * y value of the vector
-         * @public
-         * @type {number}
-         * @name y
-         * @memberof Vector2d
-         */
-    // this.y = y;
-
     return this._set(x, y);
   }
 
@@ -75,7 +56,7 @@ class Vector2d {
      * @name setZero
      * @memberof Vector2d
      * @function
-     * @returns {Vector2d} Reference to this object for method chaining
+     * @returns {Vector2} Reference to this object for method chaining
      */
   setZero() {
     return this.set(0, 0);
@@ -86,8 +67,8 @@ class Vector2d {
      * @name setV
      * @memberof Vector2d
      * @function
-     * @param {Vector2d} v
-     * @returns {Vector2d} Reference to this object for method chaining
+     * @param {Vector2} v
+     * @returns {Vector2} Reference to this object for method chaining
      */
   setV(v) {
     return this._set(v.x, v.y);
@@ -98,8 +79,8 @@ class Vector2d {
      * @name add
      * @memberof Vector2d
      * @function
-     * @param {Vector2d} v
-     * @returns {Vector2d} Reference to this object for method chaining
+     * @param {Vector2} v
+     * @returns {Vector2} Reference to this object for method chaining
      */
   add(v) {
     return this._set(this.x + v.x, this.y + v.y);
@@ -110,8 +91,8 @@ class Vector2d {
      * @name sub
      * @memberof Vector2d
      * @function
-     * @param {Vector2d} v
-     * @returns {Vector2d} Reference to this object for method chaining
+     * @param {Vector2} v
+     * @returns {Vector2} Reference to this object for method chaining
      */
   sub(v) {
     return this._set(this.x - v.x, this.y - v.y);
@@ -124,7 +105,7 @@ class Vector2d {
      * @function
      * @param {number} x
      * @param {number} [y=x]
-     * @returns {Vector2d} Reference to this object for method chaining
+     * @returns {Vector2} Reference to this object for method chaining
      */
   scale(x, y) {
     return this._set(this.x * x, this.y * (typeof (y) !== "undefined" ? y : x));
@@ -135,7 +116,7 @@ class Vector2d {
      * @name toIso
      * @memberof Vector2d
      * @function
-     * @returns {Vector2d} Reference to this object for method chaining
+     * @returns {Vector2} Reference to this object for method chaining
      */
   toIso() {
     return this._set(this.x - this.y, (this.x + this.y) * 0.5);
@@ -146,7 +127,7 @@ class Vector2d {
      * @name to2d
      * @memberof Vector2d
      * @function
-     * @returns {Vector2d} Reference to this object for method chaining
+     * @returns {Vector2} Reference to this object for method chaining
      */
   to2d() {
     return this._set(this.y + this.x / 2, this.y - this.x / 2);
@@ -157,8 +138,8 @@ class Vector2d {
      * @name scaleV
      * @memberof Vector2d
      * @function
-     * @param {Vector2d} v
-     * @returns {Vector2d} Reference to this object for method chaining
+     * @param {Vector2} v
+     * @returns {Vector2} Reference to this object for method chaining
      */
   scaleV(v) {
     return this._set(this.x * v.x, this.y * v.y);
@@ -170,7 +151,7 @@ class Vector2d {
      * @memberof Vector2d
      * @function
      * @param {number} n the value to divide the vector by
-     * @returns {Vector2d} Reference to this object for method chaining
+     * @returns {Vector2} Reference to this object for method chaining
      */
   div(n) {
     return this._set(this.x / n, this.y / n);
@@ -181,7 +162,7 @@ class Vector2d {
      * @name abs
      * @memberof Vector2d
      * @function
-     * @returns {Vector2d} Reference to this object for method chaining
+     * @returns {Vector2} Reference to this object for method chaining
      */
   abs() {
     return this._set((this.x < 0) ? -this.x : this.x, (this.y < 0) ? -this.y : this.y);
@@ -194,10 +175,10 @@ class Vector2d {
      * @function
      * @param {number} low
      * @param {number} high
-     * @returns {Vector2d} new me.Vector2d
+     * @returns {Vector2} new me.Vector2d
      */
   clamp(low, high) {
-    return new Vector2d(clamp(this.x, low, high), clamp(this.y, low, high));
+    return new Vector2(clamp(this.x, low, high), clamp(this.y, low, high));
   }
 
   /**
@@ -207,7 +188,7 @@ class Vector2d {
      * @function
      * @param {number} low
      * @param {number} high
-     * @returns {Vector2d} Reference to this object for method chaining
+     * @returns {Vector2} Reference to this object for method chaining
      */
   clampSelf(low, high) {
     return this._set(clamp(this.x, low, high), clamp(this.y, low, high));
@@ -218,8 +199,8 @@ class Vector2d {
      * @name minV
      * @memberof Vector2d
      * @function
-     * @param {Vector2d} v
-     * @returns {Vector2d} Reference to this object for method chaining
+     * @param {Vector2} v
+     * @returns {Vector2} Reference to this object for method chaining
      */
   minV(v) {
     return this._set((this.x < v.x) ? this.x : v.x, (this.y < v.y) ? this.y : v.y);
@@ -230,8 +211,8 @@ class Vector2d {
      * @name maxV
      * @memberof Vector2d
      * @function
-     * @param {Vector2d} v
-     * @returns {Vector2d} Reference to this object for method chaining
+     * @param {Vector2} v
+     * @returns {Vector2} Reference to this object for method chaining
      */
   maxV(v) {
     return this._set((this.x > v.x) ? this.x : v.x, (this.y > v.y) ? this.y : v.y);
@@ -242,10 +223,10 @@ class Vector2d {
      * @name floor
      * @memberof Vector2d
      * @function
-     * @returns {Vector2d} new me.Vector2d
+     * @returns {Vector2} new me.Vector2d
      */
   floor() {
-    return new Vector2d(Math.floor(this.x), Math.floor(this.y));
+    return new Vector2(Math.floor(this.x), Math.floor(this.y));
   }
 
   /**
@@ -253,7 +234,7 @@ class Vector2d {
      * @name floorSelf
      * @memberof Vector2d
      * @function
-     * @returns {Vector2d} Reference to this object for method chaining
+     * @returns {Vector2} Reference to this object for method chaining
      */
   floorSelf() {
     return this._set(Math.floor(this.x), Math.floor(this.y));
@@ -264,10 +245,10 @@ class Vector2d {
      * @name ceil
      * @memberof Vector2d
      * @function
-     * @returns {Vector2d} new me.Vector2d
+     * @returns {Vector2} new me.Vector2d
      */
   ceil() {
-    return new Vector2d(Math.ceil(this.x), Math.ceil(this.y));
+    return new Vector2(Math.ceil(this.x), Math.ceil(this.y));
   }
 
   /**
@@ -275,7 +256,7 @@ class Vector2d {
      * @name ceilSelf
      * @memberof Vector2d
      * @function
-     * @returns {Vector2d} Reference to this object for method chaining
+     * @returns {Vector2} Reference to this object for method chaining
      */
   ceilSelf() {
     return this._set(Math.ceil(this.x), Math.ceil(this.y));
@@ -286,10 +267,10 @@ class Vector2d {
      * @name negate
      * @memberof Vector2d
      * @function
-     * @returns {Vector2d} new me.Vector2d
+     * @returns {Vector2} new me.Vector2d
      */
   negate() {
-    return new Vector2d(-this.x, -this.y);
+    return new Vector2(-this.x, -this.y);
   }
 
   /**
@@ -297,7 +278,7 @@ class Vector2d {
      * @name negateSelf
      * @memberof Vector2d
      * @function
-     * @returns {Vector2d} Reference to this object for method chaining
+     * @returns {Vector2} Reference to this object for method chaining
      */
   negateSelf() {
     return this._set(-this.x, -this.y);
@@ -308,8 +289,8 @@ class Vector2d {
      * @name copy
      * @memberof Vector2d
      * @function
-     * @param {Vector2d} v
-     * @returns {Vector2d} Reference to this object for method chaining
+     * @param {Vector2} v
+     * @returns {Vector2} Reference to this object for method chaining
      */
   copy(v) {
     return this._set(v.x, v.y);
@@ -320,7 +301,7 @@ class Vector2d {
      * @name equals
      * @memberof Vector2d
      * @function
-     * @param {Vector2d} v
+     * @param {Vector2} v
      * @returns {boolean}
      */
   /**
@@ -353,7 +334,7 @@ class Vector2d {
      * @name normalize
      * @memberof Vector2d
      * @function
-     * @returns {Vector2d} Reference to this object for method chaining
+     * @returns {Vector2} Reference to this object for method chaining
      */
   normalize() {
     return this.div(this.length() || 1);
@@ -365,7 +346,7 @@ class Vector2d {
      * @name perp
      * @memberof Vector2d
      * @function
-     * @returns {Vector2d} Reference to this object for method chaining
+     * @returns {Vector2} Reference to this object for method chaining
      */
   perp() {
     return this._set(this.y, -this.x);
@@ -377,8 +358,8 @@ class Vector2d {
      * @memberof Vector2d
      * @function
      * @param {number} angle The angle to rotate (in radians)
-     * @param {Vector2d|ObservableVector2d} [v] an optional point to rotate around
-     * @returns {Vector2d} Reference to this object for method chaining
+     * @param {Vector2|ObservableVector2d} [v] an optional point to rotate around
+     * @returns {Vector2} Reference to this object for method chaining
      */
   rotate(angle, v) {
     var cx = 0;
@@ -403,7 +384,7 @@ class Vector2d {
      * @name dot
      * @memberof Vector2d
      * @function
-     * @param {Vector2d} v
+     * @param {Vector2} v
      * @returns {number} The dot product.
      */
   dot(v) {
@@ -415,7 +396,7 @@ class Vector2d {
      * @name cross
      * @memberof Vector2d
      * @function
-     * @param {Vector2d} v
+     * @param {Vector2} v
      * @returns {number} The cross product.
      */
   cross(v) {
@@ -449,9 +430,9 @@ class Vector2d {
      * @name lerp
      * @memberof Vector2d
      * @function
-     * @param {Vector2d} v
+     * @param {Vector2} v
      * @param {number} alpha distance along the line (alpha = 0 will be this vector, and alpha = 1 will be the given one).
-     * @returns {Vector2d} Reference to this object for method chaining
+     * @returns {Vector2} Reference to this object for method chaining
      */
   lerp(v, alpha) {
     this.x += (v.x - this.x) * alpha;
@@ -464,7 +445,7 @@ class Vector2d {
      * @name distance
      * @memberof Vector2d
      * @function
-     * @param {Vector2d} v
+     * @param {Vector2} v
      * @returns {number}
      */
   distance(v) {
@@ -478,7 +459,7 @@ class Vector2d {
      * @name angle
      * @memberof Vector2d
      * @function
-     * @param {Vector2d} v
+     * @param {Vector2} v
      * @returns {number} angle in radians
      */
   angle(v) {
@@ -490,8 +471,8 @@ class Vector2d {
      * @name project
      * @memberof Vector2d
      * @function
-     * @param {Vector2d} v The vector to project onto.
-     * @returns {Vector2d} Reference to this object for method chaining
+     * @param {Vector2} v The vector to project onto.
+     * @returns {Vector2} Reference to this object for method chaining
      */
   project(v) {
     return this.scale(this.dot(v) / v.length2());
@@ -503,8 +484,8 @@ class Vector2d {
      * @name projectN
      * @memberof Vector2d
      * @function
-     * @param {Vector2d} v The unit vector to project onto.
-     * @returns {Vector2d} Reference to this object for method chaining
+     * @param {Vector2} v The unit vector to project onto.
+     * @returns {Vector2} Reference to this object for method chaining
      */
   projectN(v) {
     return this.scale(this.dot(v));
@@ -515,7 +496,7 @@ class Vector2d {
      * @name clone
      * @memberof Vector2d
      * @function
-     * @returns {Vector2d} new me.Vector2d
+     * @returns {Vector2} new me.Vector2d
      */
   clone() {
     return pool.pull("Vector2d", this.x, this.y);
@@ -533,4 +514,4 @@ class Vector2d {
   }
 }
 
-export default Vector2d;
+export default Vector2;

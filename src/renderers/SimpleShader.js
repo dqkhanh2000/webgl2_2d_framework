@@ -1,27 +1,39 @@
-import { mat3 } from "gl-matrix";
+/* eslint-disable no-unused-vars */
 import Color from "../math/Color";
-import VertexBuffer from "./VertexBuffer";
+import Transform from "../math/Transform";
+import AbstractShader from "../core/AbstractShader";
+import VertexBuffer from "../core/VertexBuffer";
+import vertexShaderSrc from "./shader/defaultProgram.vert";
+import fragmentShaderSrc from "./shader/defaultProgram.frag";
 
-export default class SimpleShader {
-  constructor(gl, vertexShaderSource, fragmentShaderSource) {
-    this.gl = gl;
-    this.transform = mat3.identity(mat3.create());
-    this._init(vertexShaderSource, fragmentShaderSource);
+export default class SimpleShader extends AbstractShader {
+  constructor(gl) {
+    super(gl);
   }
 
-  _init(vertexShaderSource, fragmentShaderSource) {
-    this.vertexSHader = this._loadAndCompileShader(this.gl.VERTEX_SHADER, vertexShaderSource);
-    this.fragmentSHader = this._loadAndCompileShader(this.gl.FRAGMENT_SHADER, fragmentShaderSource);
+  /**
+   * init the shader.
+   * @override
+   */
+  init() {
+    this._initShaderProgram(vertexShaderSrc, fragmentShaderSrc);
+    this._initShaderAttributes();
+  }
+
+  _initShaderProgram(vertexShaderSource, fragmentShaderSource) {
+    this.vertexShader = this._loadAndCompileShader(this.gl.VERTEX_SHADER, vertexShaderSource);
+    this.fragmentShader = this._loadAndCompileShader(this.gl.FRAGMENT_SHADER, fragmentShaderSource);
     this.program = this.gl.createProgram();
-    this.gl.attachShader(this.program, this.vertexSHader);
-    this.gl.attachShader(this.program, this.fragmentSHader);
+    this.gl.attachShader(this.program, this.vertexShader);
+    this.gl.attachShader(this.program, this.fragmentShader);
     this.gl.linkProgram(this.program);
     if (!this.gl.getProgramParameter(this.program, this.gl.LINK_STATUS)) {
       throw new Error(`Unable to initialize the shader program: ${ this.gl.getProgramInfoLog(this.program)}`);
     }
+  }
 
+  _initShaderAttributes() {
     this.positionAttributeLocation = this.gl.getAttribLocation(this.program, "a_position");
-
     this.colorLocation = this.gl.getUniformLocation(this.program, "u_color");
     this.transformLocation = this.gl.getUniformLocation(this.program, "u_transform");
 
@@ -55,10 +67,10 @@ export default class SimpleShader {
   }
 
   /**
-   * @param {mat3} matrixTransform The transformation matrix to apply to the vertex positions
+   * @param {Float32Array} matrixTransform The transformation matrix to apply to the vertex positions
    */
+
   updateTransform(matrixTransform) {
-    this.transform = matrixTransform;
     this.gl.uniformMatrix3fv(this.transformLocation, false, matrixTransform);
   }
 

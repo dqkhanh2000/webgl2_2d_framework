@@ -1,12 +1,13 @@
-import Matrix2d from "./Matrix2d";
-import Vector2 from "./vector2";
+import { mat4 } from "gl-matrix";
+import Matrix2d from "../math/Matrix2d";
+import Vector2 from "../math/vector2";
 
 export default class Transform {
 
   /**
    * @param {Matrix2d} projection - The projection matrix.
    */
-  constructor(projection) {
+  constructor(projection, isTexture = false) {
     this._projection = projection;
     this.worldTransform = new Matrix2d();
     this.worldTransform.identity();
@@ -17,6 +18,12 @@ export default class Transform {
     this.scale = new Vector2(1, 1);
 
     this.pivot = new Vector2();
+
+    if (isTexture) {
+      this.isTexture = true;
+      this.pivot.set(0.5, 0.5);
+      this.textureMatrix = mat4.identity(mat4.create());
+    }
 
     this._rotation = 0;
     this._width = 0;
@@ -47,6 +54,16 @@ export default class Transform {
     lt.scale((this._width || 1) * this.scale.x, (this._height || 1) * this.scale.y);
     lt.translate(-this.pivot.x, -this.pivot.y);
     this._currentLocalID = this._localID;
+
+    if (this.isTexture) {
+      this.updateTextureMatrix();
+    }
+  }
+
+  updateTextureMatrix() {
+    // this.textureMatrix[0] = this._width;
+    // this.textureMatrix[5] = this._height;
+
   }
 
   /**
@@ -74,8 +91,6 @@ export default class Transform {
     else {
       this.worldTransform.copyFrom(lt);
     }
-
-    console.log(this.worldTransform.array);
   }
 
   get rotation() {
@@ -117,6 +132,17 @@ export default class Transform {
       this._projection = value;
       this.worldTransform.multiply(this._projection);
       this.localTransform.multiply(this._projection);
+    }
+  }
+
+  set textureMode(value) {
+    if (typeof value === "boolean") {
+      this.isTexture = value;
+      if (value) {
+        this.isTexture = true;
+        this.pivot.set(0.5, 0.5);
+        this.textureMatrix = mat4.identity(mat4.create());
+      }
     }
   }
 }

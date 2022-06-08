@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import Color from "../math/Color";
-import Transform from "../math/Transform";
+import Transform from "../core/Transform";
 import AbstractShader from "../core/AbstractShader";
 import VertexBuffer from "../core/VertexBuffer";
 import vertexShaderSrc from "./shader/textureProgram.vert";
@@ -12,14 +12,30 @@ export default class TextureShader extends SimpleShader {
     super(gl);
   }
 
+  /**
+   * init the shader.
+   * @override
+   */
+  init() {
+    this._initShaderProgram(vertexShaderSrc, fragmentShaderSrc);
+    this._initShaderAttributes();
+  }
+
   _initShaderAttributes() {
     super._initShaderAttributes();
     this.textureMatrixLocation = this.gl.getUniformLocation(this.program, "u_textureMatrix");
   }
 
-  activateShader(color = Color.WHITE) {
+  /**
+   * @param {WebGLTexture} texture - The texture to render.
+   */
+  activateShader(texture) {
     this.gl.useProgram(this.program);
     this.gl.enableVertexAttribArray(this.positionAttributeLocation);
-    this.gl.uniform4f(this.colorLocation, color.glArray[0], color.glArray[1], color.glArray[2], color.glArray[3]);
+    this.gl.uniform1i(this.textureLocation, 0);
+    this.gl.activeTexture(this.gl.TEXTURE0 + 0);
+    this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+    console.log(this.transform.worldTransform.array);
+    this.gl.uniformMatrix4fv(this.textureMatrixLocation, false, this.transform.textureMatrix);
   }
 }

@@ -7,6 +7,11 @@ import Color from "../math/Color";
  * @param {WebGL2RenderingContext} gl - The WebGL2RenderingContext to use.
  */
 export default class Core {
+
+  static get GL() {
+    return this._gl;
+  }
+
   constructor() {
     this.gl = null;
   }

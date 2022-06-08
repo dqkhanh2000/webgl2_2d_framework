@@ -1,5 +1,5 @@
 import EventEmitter from "eventemitter3";
-import Transform from "../math/Transform";
+import Transform from "./Transform";
 import * as Math from "../math/Math";
 
 export default class Container extends EventEmitter {
@@ -34,9 +34,9 @@ export default class Container extends EventEmitter {
      * Updates the object transform for rendering.
      */
   updateTransform() {
-    this.transform.updateTransform(this.parent.transform);
+    this.transform.updateTransform(this.parent?.transform);
     // multiply the alphas..
-    this.worldAlpha = this.alpha * this.parent.worldAlpha;
+    this.worldAlpha = this.alpha * (this.parent?.worldAlpha || 1);
   }
 
   /**

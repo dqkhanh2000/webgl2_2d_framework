@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import Color from "../math/Color";
-import Transform from "../math/Transform";
+import Transform from "../core/Transform";
 import AbstractShader from "../core/AbstractShader";
 import VertexBuffer from "../core/VertexBuffer";
 import vertexShaderSrc from "./shader/defaultProgram.vert";
@@ -33,6 +33,7 @@ export default class SimpleShader extends AbstractShader {
   }
 
   _initShaderAttributes() {
+    this.gl.useProgram(this.program);
     this.positionAttributeLocation = this.gl.getAttribLocation(this.program, "a_position");
     this.colorLocation = this.gl.getUniformLocation(this.program, "u_color");
     this.transformLocation = this.gl.getUniformLocation(this.program, "u_transform");

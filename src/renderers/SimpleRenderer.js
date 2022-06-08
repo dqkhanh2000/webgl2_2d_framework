@@ -1,8 +1,7 @@
 import Color from "../math/Color";
-import Transform from "../math/Transform";
 import AbstractRenderer from "../core/AbstractRenderer";
 
-export default class Renderable extends AbstractRenderer {
+export default class Renderer extends AbstractRenderer {
 
   /**
      * @param {SimpleShader} shader - The shader to use.

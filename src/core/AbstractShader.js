@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import Transform from "../math/Transform";
+import Transform from "./Transform";
 
 /**
  * @class

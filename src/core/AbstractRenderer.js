@@ -1,5 +1,5 @@
 import Color from "../math/Color";
-import Transform from "../math/Transform";
+import Transform from "./Transform";
 import AbstractShader from "./AbstractShader";
 
 export default class AbstractRenderer {

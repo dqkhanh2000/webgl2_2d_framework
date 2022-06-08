@@ -9,7 +9,6 @@ export class MyGame {
   constructor() {
     let core = new Engine2D();
     core.init("canvas");
-    core.resizeCanvasToDisplaySize();
     // let vertexBuffer = new VertexBuffer();
     // vertexBuffer.init(core.gl);
 
@@ -32,6 +31,7 @@ export class MyGame {
 
       Ticker.SharedTicker.add(() => {
         sprite.transform.rotation += 0.01;
+        // sprite2.transform.rotation += 0.01;
         core.update();
       });
 

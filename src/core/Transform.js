@@ -77,13 +77,16 @@ export default class Transform {
       wt.copyFrom(this._originWorldTransform);
 
       wt.translate(parentTransform.pivot.x, parentTransform.pivot.y);
-      wt.translate(this.pivot.x - parentTransform.pivot.x, this.pivot.y - parentTransform.pivot.y);
-      wt.translate(parentTransform.position.x + this.position.x, parentTransform.position.y + this.position.y);
-      wt.rotate(parentTransform.rotation + this._rotation);
-      wt.scale((this._width || 1) * this.scale.x * parentTransform.scale.x,
-        (this._height || 1) * this.scale.y * parentTransform.scale.y);
-      wt.translate(parentTransform.pivot.x - this.pivot.x, parentTransform.pivot.y - this.pivot.y);
+      wt.translate(parentTransform.position.x, parentTransform.position.y);
+      wt.rotate(parentTransform.rotation);
+      wt.scale(parentTransform.scale.x, parentTransform.scale.y);
       wt.translate(-parentTransform.pivot.x, -parentTransform.pivot.y);
+
+      wt.translate(this.pivot.x, this.pivot.y);
+      wt.translate(this.position.x, this.position.y);
+      wt.rotate(this._rotation);
+      wt.scale((this._width || 1) * this.scale.x, (this._height || 1) * this.scale.y);
+      wt.translate(-this.pivot.x, -this.pivot.y);
     }
     else {
       this.worldTransform.copyFrom(lt);

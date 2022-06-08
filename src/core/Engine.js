@@ -16,11 +16,15 @@ export default class Engine2D {
      * @returns {void}
      * @memberof Engine
     */
-  init(canvas) {
+  init(canvas, autoResize = true) {
     this.core.init(canvas);
     this.gl = this.core.gl;
     Engine2D.Core = this.core;
     this.stage = new Container();
+    this.resizeCanvasToDisplaySize();
+    if (autoResize) {
+      this.setAutoResize();
+    }
   }
 
   update() {
@@ -58,6 +62,12 @@ export default class Engine2D {
       return true;
     }
     return false;
+  }
+
+  setAutoResize() {
+    window.addEventListener("resize", () => {
+      this.resizeCanvasToDisplaySize();
+    });
   }
 
 }

@@ -37,6 +37,7 @@ export default class Engine2D {
   }
 
   render() {
+    this.clearCanvas();
     this.stage.render();
   }
 

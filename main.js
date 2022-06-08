@@ -14,23 +14,39 @@ export class MyGame {
     // let vertexBuffer = new VertexBuffer();
     // vertexBuffer.init(core.gl);
 
-    // let texture = Texture.FromURL(core.gl, "dist/images/sad.png");
-    // texture.once("load", () => {
-    //   let sprite = new Sprite(core.gl, texture);
-    //   sprite.transform.position.x = 400;
-    //   sprite.transform.position.y = 400;
-    //   sprite.transform.pivot.x = 1;
-    //   sprite.transform.pivot.y = 0.5;
-    //   sprite.transform.rotation = Math.PI / 2;
+    let texture = Texture.FromURL(core.gl, "dist/images/flamingos.png");
+    texture.once("load", () => {
+      let sprite = new Sprite(core.gl, texture);
+      sprite.transform.position.x = 300;
+      sprite.transform.position.y = 400;
+      core.stage.addChild(sprite);
+      
 
-    // });
-    let particle = new Particle(core.gl, 400, 400, 100, 0.5, 1, 1.1, -Math.PI, Math.PI, 0.5, 1, [0, 0]);
-    // sprite.addChild(particle);
+    });
+
+    let texture2 = Texture.FromURL(core.gl, "dist/images/greengradient.png");
+    texture2.once("load", () => {
+      let sprite = new Sprite(core.gl, texture2);
+      sprite.transform.position.x = 200;
+      sprite.transform.position.y = 400;
+      core.stage.addChild(sprite);
+    });
+
+    let texture3 = Texture.FromURL(core.gl, "dist/images/redgradient.png");
+    texture3.once("load", () => {
+      let sprite = new Sprite(core.gl, texture3);
+      sprite.transform.position.x = 400;
+      sprite.transform.position.y = 400;
+      core.stage.addChild(sprite);
+    });
+
+    let particle = new Particle(0, 0, 1000, 0.1, 0.5, 1, Math.PI/2.0 - 0.5, Math.PI/2.0 + 0.5, 0.5, 1, [0.0, -0.8]);
     core.stage.addChild(particle);
     particle.play();
 
     Ticker.SharedTicker.add(() => {
       core.update();
+      // particle.update();
     });
   }
 }

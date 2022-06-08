@@ -2,6 +2,7 @@
 import vertexShaderSrc from "./shader/textureProgram.vert";
 import fragmentShaderSrc from "./shader/textureProgram.frag";
 import SimpleShader from "./SimpleShader";
+import Texture from "../core/Texture";
 
 export default class TextureShader extends SimpleShader {
 
@@ -69,7 +70,17 @@ export default class TextureShader extends SimpleShader {
   /**
    * @param {WebGLTexture} texture - The texture to render.
    */
-  activateShader(texture) {
+  activateShader(texture, blendType = Texture.BLEND_TYPE.NORMAL) {
+    this.gl.enable(this.gl.BLEND);
+    if (blendType === Texture.BLEND_TYPE.NORMAL) {
+      this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
+    }
+    else if (blendType === Texture.BLEND_TYPE.ADDITIVE) {
+      this.gl.blendFunc(this.gl.ONE, this.gl.ONE);
+    }
+    else if (blendType === Texture.BLEND_TYPE.MULTIPLY) {
+      this.gl.blendFunc(this.gl.DST_COLOR, this.gl.ZERO);
+    }
     this.gl.useProgram(this.program);
     this.gl.bindVertexArray(this.vao);
 

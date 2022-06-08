@@ -47,6 +47,13 @@ export default class Texture extends EventEmitter {
     TextureCache.add(url, texture);
     return texture;
   }
+
+  static BLEND_TYPE = {
+    NORMAL   : 0,
+    ADDITIVE : 1,
+    MULTIPLY : 2,
+  };
+
 }
 
 export class TextureCache {

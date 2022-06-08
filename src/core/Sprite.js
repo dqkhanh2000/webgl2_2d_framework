@@ -19,11 +19,12 @@ export class Sprite extends Container {
 
     this.shader = new TextureShader(gl);
     this.shader.transform = this.transform;
+    this.blendType = Texture.BLEND_TYPE.NORMAL;
     this.shader.init();
   }
 
   _render(renderer) {
-    this.shader.activateShader(this.texture.texture);
+    this.shader.activateShader(this.texture.texture, this.blendType);
   }
 
   updateTransform() {

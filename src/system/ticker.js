@@ -84,7 +84,7 @@ export default class Ticker extends EventEmitter {
 
       this.deltaMS = this.elapsedMS;
       this.deltaTime = this.elapsedMS / 1000;
-      this.emit("tick", this.deltaTime);
+      this.emit("tick", this.deltaTime, this.deltaMS);
 
     }
     else {

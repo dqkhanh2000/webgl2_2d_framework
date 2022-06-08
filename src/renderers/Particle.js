@@ -8,8 +8,8 @@ import Ticker from "../system/ticker";
 
 export default class Particle extends Container {
 
-  constructor(gl, x, y, partImg, numParticles, birthRate, minLifeRange, maxLifeRange, minTheta, maxTheta, minSpeed, maxSpeed, gravity) {
-    super(gl, x, y, partImg, numParticles, birthRate, minLifeRange, maxLifeRange, minTheta, maxTheta, minSpeed, maxSpeed, gravity);
+  constructor(gl, x, y, numParticles, birthRate, minLifeRange, maxLifeRange, minTheta, maxTheta, minSpeed, maxSpeed, gravity) {
+    super(gl, x, y, numParticles, birthRate, minLifeRange, maxLifeRange, minTheta, maxTheta, minSpeed, maxSpeed, gravity);
     this.gl = gl;
     this.numParticles = numParticles;
     this.birthRate = birthRate;
@@ -21,7 +21,6 @@ export default class Particle extends Container {
     this.maxSpeed = maxSpeed;
     this.gravity = gravity;
     this.canPlay = false;
-    this.img = partImg;
     if (this.gl != null) {
       this.state = this.init();
       this.state.origin = [x, y];
@@ -104,7 +103,6 @@ export default class Particle extends Container {
     gl.shaderSource(compiledShader, source);
     gl.compileShader(compiledShader);
     if (!gl.getShaderParameter(compiledShader, gl.COMPILE_STATUS)) {
-        console.log(source);
       throw new Error(`A shader compiling error occurred: ${
         gl.getShaderInfoLog(compiledShader)}`);
     }
@@ -254,19 +252,6 @@ export default class Particle extends Container {
         location       : this.gl.getAttribLocation(render_program, "i_Position"),
         num_components : 2,
         type           : this.gl.FLOAT,
-        divisor        : 1,
-      },
-      i_Age: {
-        location       : this.gl.getAttribLocation(render_program, "i_Age"),
-        num_components : 1,
-        type           : this.gl.FLOAT,
-        divisor        : 1,
-      },
-      i_Life: {
-        location       : this.gl.getAttribLocation(render_program, "i_Life"),
-        num_components : 1,
-        type           : this.gl.FLOAT,
-        divisor        : 1,
       },
     };
 
@@ -282,42 +267,6 @@ export default class Particle extends Container {
       this.gl.createVertexArray(), /* for rendering buffer 1 */
       this.gl.createVertexArray(), /* for rendering buffer 2 */
     ];
-    var sprite_vert_data
-            = new Float32Array([
-              1, 1,
-              1, 1,
-
-              -1, 1,
-              0, 1,
-
-              -1, -1,
-              0, 0,
-
-              1, 1,
-              1, 1,
-
-              -1, -1,
-              0, 0,
-
-              1, -1,
-              1, 0]);
-    var sprite_attrib_locations = {
-      i_Coord: {
-        location       : this.gl.getAttribLocation(render_program, "i_Coord"),
-        num_components : 2,
-        type           : this.gl.FLOAT,
-      },
-      i_TexCoord: {
-        location       : this.gl.getAttribLocation(render_program, "i_TexCoord"),
-        num_components : 2,
-        type           : this.gl.FLOAT,
-      },
-    };
-    var sprite_vert_buf = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, sprite_vert_buf);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, sprite_vert_data, this.gl.STATIC_DRAW);
-
-
     /* this has information about buffers and bindings for each VAO. */
     var vao_desc = [
       {
@@ -342,11 +291,6 @@ export default class Particle extends Container {
           buffer_object : buffers[0],
           stride        : 4 * 6,
           attribs       : render_attrib_locations,
-        },
-        {
-          buffer_object : sprite_vert_buf,
-          stride        : 4 * 4,
-          attribs       : sprite_attrib_locations,
         }],
       },
       {
@@ -355,14 +299,10 @@ export default class Particle extends Container {
           buffer_object : buffers[1],
           stride        : 4 * 6,
           attribs       : render_attrib_locations,
-        },
-        {
-          buffer_object : sprite_vert_buf,
-          stride        : 4 * 4,
-          attribs       : sprite_attrib_locations,
         }],
       },
     ];
+
 
     /* Populate buffers with some initial data. */
     var initial_data
@@ -389,18 +329,13 @@ export default class Particle extends Container {
       this.gl.RG,
       this.gl.UNSIGNED_BYTE,
       this.randomRGData(512, 512));
-      this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.MIRRORED_REPEAT);
-      this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.MIRRORED_REPEAT);
-      this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
-      this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
-      this.gl.enable(this.gl.BLEND);
-      this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.MIRRORED_REPEAT);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.MIRRORED_REPEAT);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
+    this.gl.enable(this.gl.BLEND);
+    this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
 
-    var particle_tex = this.gl.createTexture();
-    this.gl.bindTexture(this.gl.TEXTURE_2D, particle_tex);
-    this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA8, 32, 32, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.img);
-    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
-    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
     return {
       particle_sys_buffers    : buffers,
       particle_sys_vaos       : vaos,
@@ -420,7 +355,6 @@ export default class Particle extends Container {
       max_theta               : this.maxTheta,
       min_speed               : this.minSpeed,
       max_speed               : this.maxSpeed,
-      particle_tex            : particle_tex,
     };
   }
 

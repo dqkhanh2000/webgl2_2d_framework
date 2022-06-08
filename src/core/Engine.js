@@ -44,7 +44,7 @@ export default class Engine2D {
     this.core.setViewport(x, y, width, height);
   }
 
-  clearCanvas(color = Color.WHITE) {
+  clearCanvas(color = Color.BLACK) {
     this.core.clearCanvas(color);
   }
 

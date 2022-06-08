@@ -10,7 +10,7 @@ export class Sprite extends Container {
    * @param {Texture} texture - The texture contain image will be renderer.
    * */
   constructor(gl, texture) {
-    super(gl);
+    super();
     this.texture = texture;
     this.transform.textureMode = true;
 

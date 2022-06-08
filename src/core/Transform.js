@@ -1,4 +1,3 @@
-import { mat4 } from "gl-matrix";
 import Matrix2d from "../math/Matrix2d";
 import Vector2 from "../math/vector2";
 
@@ -9,20 +8,20 @@ export default class Transform {
    */
   constructor(projection, isTexture = false) {
     this._projection = projection;
-    this.worldTransform = new Matrix2d();
-    this.worldTransform.identity();
-    this.localTransform = new Matrix2d();
-    this.localTransform.identity();
+    this.worldTransform = new Matrix2d().identity();
+    this._originWorldTransform = new Matrix2d().identity();
+    this.localTransform = new Matrix2d().identity();
+    this._originLocalTransform = new Matrix2d().identity();
 
     this.position = new Vector2();
     this.scale = new Vector2(1, 1);
+
 
     this.pivot = new Vector2();
 
     if (isTexture) {
       this.isTexture = true;
       this.pivot.set(0.5, 0.5);
-      this.textureMatrix = mat4.identity(mat4.create());
     }
 
     this._rotation = 0;
@@ -30,6 +29,8 @@ export default class Transform {
     this._height = 0;
     this._wPivot = 0;
     this._hPivot = 0;
+
+    this.isDirty = true;
 
   }
 
@@ -48,16 +49,12 @@ export default class Transform {
   /** Updates the local transformation matrix. */
   updateLocalTransform() {
     const lt = this.localTransform;
+    lt.copyFrom(this._originLocalTransform);
     lt.translate(this.pivot);
     lt.translate(this.position);
     lt.rotate(this._rotation);
     lt.scale((this._width || 1) * this.scale.x, (this._height || 1) * this.scale.y);
     lt.translate(-this.pivot.x, -this.pivot.y);
-    this._currentLocalID = this._localID;
-
-    if (this.isTexture) {
-      this.updateTextureMatrix();
-    }
   }
 
   updateTextureMatrix() {
@@ -77,8 +74,8 @@ export default class Transform {
 
     if (parentTransform) {
       let wt = this.worldTransform;
-      // wt.copyFrom(parentTransform.worldTransform );
-      // wt.multiply(lt);
+      wt.copyFrom(this._originWorldTransform);
+
       wt.translate(parentTransform.pivot.x, parentTransform.pivot.y);
       wt.translate(this.pivot.x - parentTransform.pivot.x, this.pivot.y - parentTransform.pivot.y);
       wt.translate(parentTransform.position.x + this.position.x, parentTransform.position.y + this.position.y);
@@ -100,6 +97,7 @@ export default class Transform {
   set rotation(value) {
     if (this._rotation !== value) {
       this._rotation = value;
+      this.isDirty = true;
     }
   }
 
@@ -110,6 +108,7 @@ export default class Transform {
   set width(value) {
     if (this._width !== value) {
       this._width = value;
+      this.isDirty = true;
     }
   }
 
@@ -120,6 +119,7 @@ export default class Transform {
   set height(value) {
     if (this._height !== value) {
       this._height = value;
+      this.isDirty = true;
     }
   }
 
@@ -130,8 +130,9 @@ export default class Transform {
   set projection(value) {
     if (value && this._projection !== value) {
       this._projection = value;
-      this.worldTransform.multiply(this._projection);
-      this.localTransform.multiply(this._projection);
+      this._originLocalTransform.identity().multiply(this._projection);
+      this._originWorldTransform.identity().multiply(this._projection);
+      this.isDirty = true;
     }
   }
 
@@ -141,7 +142,6 @@ export default class Transform {
       if (value) {
         this.isTexture = true;
         this.pivot.set(0.5, 0.5);
-        this.textureMatrix = mat4.identity(mat4.create());
       }
     }
   }

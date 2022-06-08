@@ -7,6 +7,20 @@ import vertexShaderSrc from "./shader/defaultProgram.vert";
 import fragmentShaderSrc from "./shader/defaultProgram.frag";
 
 export default class SimpleShader extends AbstractShader {
+
+  static verticesOfSquare = [
+    // 1, 1, 0,
+    // 0, 1, 0,
+    // 1, 0, 0,
+    // 0, 0, 0,
+    0, 0,
+    0, 1,
+    1, 0,
+    1, 0,
+    0, 1,
+    1, 1,
+  ];
+
   constructor(gl) {
     super(gl);
   }
@@ -72,6 +86,7 @@ export default class SimpleShader extends AbstractShader {
    */
 
   updateTransform(matrixTransform) {
+    this.gl.useProgram(this.program);
     this.gl.uniformMatrix3fv(this.transformLocation, false, matrixTransform);
   }
 

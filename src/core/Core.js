@@ -51,4 +51,8 @@ export default class Core {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
   }
 
+  setViewport(x, y, width, height) {
+    this.gl.viewport(x, y, width, height);
+  }
+
 }

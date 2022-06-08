@@ -1,11 +1,13 @@
+import Color from "../math/Color";
+import Container from "./Container";
 import Core from "./Core";
-import VertexBuffer from "./VertexBuffer";
 
-export class Engine2D {
+export default class Engine2D {
+
+  static Core = null;
+
   constructor() {
     this.core = new Core();
-    this.gl = null;
-    this.vertexBuffer = new VertexBuffer();
   }
 
   /**
@@ -17,15 +19,46 @@ export class Engine2D {
   init(canvas) {
     this.core.init(canvas);
     this.gl = this.core.gl;
-    this.vertexBuffer.init(this.gl);
+    Engine2D.Core = this.core;
+    this.stage = new Container();
   }
 
   update() {
-
+    this.updateTransform();
+    this.render();
   }
 
-  draw() {
-
+  updateTransform() {
+    this.stage.updateTransform();
   }
+
+  render() {
+    this.stage.render();
+  }
+
+  setViewport(x, y, width, height) {
+    this.core.setViewport(x, y, width, height);
+  }
+
+  clearCanvas(color = Color.WHITE) {
+    this.core.clearCanvas(color);
+  }
+
+  resizeCanvasToDisplaySize(multiplier) {
+    let canvas = this.gl.canvas;
+    multiplier = multiplier || 1;
+    const width  = canvas.clientWidth * multiplier | 0;
+    const height = canvas.clientHeight * multiplier | 0;
+    if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width;
+      canvas.height = height;
+      this.setViewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
+      this.clearCanvas();
+      this.stage.resetProjection();
+      return true;
+    }
+    return false;
+  }
+
 }
 

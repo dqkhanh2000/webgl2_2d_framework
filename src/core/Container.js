@@ -1,6 +1,8 @@
 import EventEmitter from "eventemitter3";
 import Transform from "./Transform";
 import * as Math from "../math/Math";
+import Engine2D from "./Engine";
+import Matrix2d from "../math/Matrix2d";
 
 export default class Container extends EventEmitter {
   constructor() {
@@ -24,6 +26,15 @@ export default class Container extends EventEmitter {
     this.isMask = false;
 
     this.children = [];
+
+    this.gl = Engine2D.Core.gl;
+    this.initialized = false;
+  }
+
+  _initBeforeFirstRender() {
+    if (!this.transform.projection) {
+      this.resetProjection();
+    }
   }
 
   get destroyed() {
@@ -34,9 +45,19 @@ export default class Container extends EventEmitter {
      * Updates the object transform for rendering.
      */
   updateTransform() {
-    this.transform.updateTransform(this.parent?.transform);
+    if (!this.initialized) {
+      this._initBeforeFirstRender();
+      this.initialized = true;
+    }
+
+    if (this.transform.isDirty) {
+      this.transform.updateTransform(this.parent?.transform);
+    }
     // multiply the alphas..
     this.worldAlpha = this.alpha * (this.parent?.worldAlpha || 1);
+    this.children.forEach((child) => {
+      child.updateTransform();
+    });
   }
 
   /**
@@ -165,6 +186,11 @@ export default class Container extends EventEmitter {
     this.children[index1] = child2;
     this.children[index2] = child;
     this.onChildrenChange(index1 < index2 ? index1 : index2);
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  onChildrenChange(length) {
+
   }
 
   /**
@@ -314,16 +340,15 @@ export default class Container extends EventEmitter {
 
   /**
    * Render the object using the WebGL renderer
-   * @param {AbstractRenderer} renderer - The renderer
    */
-  render(renderer) {
+  render() {
     if (this.visible === false || this.alpha === 0 || !this.renderable) {
       return;
     }
 
-    this._render(renderer);
+    this._render();
     for (let i = 0, j = this.children.length; i < j; ++i) {
-      this.children[i].render(renderer);
+      this.children[i].render();
     }
   }
 
@@ -333,8 +358,21 @@ export default class Container extends EventEmitter {
    * @param {AbstractRenderer} renderer - The renderer
    */
   // eslint-disable-next-line no-unused-vars
-  _render(renderer) {
+  _render() {
     // do nothing
+  }
+
+  resetProjection() {
+    if (this.transform.projection) {
+      this.transform.projection.identity().projection(this.gl.canvas.width, this.gl.canvas.height);
+    }
+    else {
+      this.transform.projection = new Matrix2d().projection(this.gl.canvas.width, this.gl.canvas.height);
+    }
+
+    this.children.forEach((child) => {
+      child.resetProjection();
+    });
   }
 
 

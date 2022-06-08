@@ -26,99 +26,100 @@ import EventEmitter from "eventemitter3";
  */
 export default class Ticker extends EventEmitter {
 
-    /**
+  /**
      * @param {Object} options Ticker config options
      * @param {boolean} [options.autoStart=false] - Whether or not this ticker should start automatically.
      */
-    constructor(options) {
-        super();
-        this.deltaTime = 0;
-        this.deltaMS = 1;
-        this.elapsedMS = 0;
-        this.lastTime = 0;
-        this.timeScale = 1;
-        this.started = false;
-        this.paused = false;
-        this.autoStart = options.autoStart || false;
+  constructor(options) {
+    super();
+    this.deltaTime = 0;
+    this.deltaMS = 1;
+    this.elapsedMS = 0;
+    this.lastTime = 0;
+    this.timeScale = 1;
+    this.started = false;
+    this.paused = false;
+    this.autoStart = options.autoStart || false;
 
-        if (this.autoStart) {
-            this.start();
-        }
+    if (this.autoStart) {
+      this.start();
+    }
+  }
+
+  start() {
+    this.emit("start");
+    this.lastTime = performance.now();
+    this.started = true;
+    requestAnimationFrame(this.update.bind(this));
+  }
+
+  stop() {
+    this.emit("stop");
+    this.started = false;
+  }
+
+  update() {
+    if (!this.started || this.paused || this.timeScale === 0) {
+      return;
     }
 
-    start() {
-        this.emit("start");
-        this.lastTime = performance.now();
-        this.started = true;
-        requestAnimationFrame(this.tick.bind(this));
-    }
+    const currentTime = performance.now();
+    if (currentTime > this.lastTime) {
+      this.elapsedMS = currentTime - this.lastTime;
 
-    stop() {
-        this.emit("stop");
-        this.started = false;
-    }
+      if (this.elapsedMS > this._maxElapsedMS) {
+        this.elapsedMS = this._maxElapsedMS;
+      }
+      if (this.timeScale !== 1) {
+        this.elapsedMS *= this.timeScale;
+      }
 
-    update() {
-        if (!this.started || this.paused || this.timeScale === 0) {
-            return;
+      if (this._minElapsedMS) {
+        const delta = this.currentTime - this._lastFrame | 0;
+        if (delta < this._minElapsedMS) {
+          return;
         }
+        this._lastFrame = this.currentTime - (delta % this._minElapsedMS);
+      }
 
-        const currentTime = performance.now();
-        if (currentTime > this.lastTime) {
-            this.elapsedMS = currentTime - this.lastTime;
+      this.deltaMS = this.elapsedMS;
+      this.deltaTime = this.elapsedMS / 1000;
+      this.emit("tick", this.deltaTime);
 
-            if (this.elapsedMS > this._maxElapsedMS) {
-                this.elapsedMS = this._maxElapsedMS;
-            }
-            if (this.timeScale !== 1) {
-                this.elapsedMS *= this.timeScale;
-            }
-
-            if (this._minElapsedMS) {
-                const delta = this.currentTime - this._lastFrame | 0;
-                if (delta < this._minElapsedMS) {
-                    return;
-                }
-                this._lastFrame = this.currentTime - (delta % this._minElapsedMS);
-            }
-
-            this.deltaMS = this.elapsedMS;
-            this.deltaTime = this.elapsedMS / 1000;
-            this.emit("tick", this.deltaTime);
-
-        }
-        else {
-            this.elapsedMS = 0;
-            this.deltaMS = 0;
-        }
-        this.lastTime = currentTime;
     }
+    else {
+      this.elapsedMS = 0;
+      this.deltaMS = 0;
+    }
+    this.lastTime = currentTime;
+    requestAnimationFrame(this.update.bind(this));
+  }
 
-    /**
+  /**
      * Pause the ticker and all of its children.
      * @return {Ticker} This instance.
      * @fires Ticker#pause
      */
-    pause() {
-        this.paused = true;
-        this.emit("pause");
-        return this;
-    }
+  pause() {
+    this.paused = true;
+    this.emit("pause");
+    return this;
+  }
 
-    /**
+  /**
      * Resume the ticker and all of its children.
      * @return {Ticker} This instance.
      * @fires Ticker#resume
      * @example
      * ticker.pause();
      */
-    resume() {
-        this.paused = false;
-        this.emit("resume");
-        return this;
-    }
+  resume() {
+    this.paused = false;
+    this.emit("resume");
+    return this;
+  }
 
-    /**
+  /**
      * Add a callback to the ticker.
      * @param {Function} callback - The callback to add.
      * @param {any} [context] - The context in which to call the callback.
@@ -128,36 +129,38 @@ export default class Ticker extends EventEmitter {
      *   console.log("tick");
      * });
      */
-    add(callback, context) {
-        this.on("tick", callback, context);
-        return this;
-    }
+  add(callback, context) {
+    this.on("tick", callback, context);
+    return this;
+  }
 
-    get FPS() {
-        return Math.round(1000 / this.elapsedMS);
-    }
+  get FPS() {
+    return Math.round(1000 / this.elapsedMS);
+  }
 
-    get minFPS() {
-        return Math.round(1000 / this._maxElapsedMS);
-    }
+  get minFPS() {
+    return Math.round(1000 / this._maxElapsedMS);
+  }
 
-    set minFPS(value) {
-        const minFPS = Math.min(this.maxFPS, value);
-        this._maxElapsedMS = 1000 / minFPS;
-    }
+  set minFPS(value) {
+    const minFPS = Math.min(this.maxFPS, value);
+    this._maxElapsedMS = 1000 / minFPS;
+  }
 
-    get maxFPS() {
-        return Math.round(1000 / this._minElapsedMS);
-    }
+  get maxFPS() {
+    return Math.round(1000 / this._minElapsedMS);
+  }
 
-    set maxFPS(value) {
-        if (value === 0) {
-            this._minElapsedMS = 0;
-        }
-        else {
-            this._minElapsedMS = 1000 / value;
-        }
+  set maxFPS(value) {
+    if (value === 0) {
+      this._minElapsedMS = 0;
     }
+    else {
+      this._minElapsedMS = 1000 / value;
+    }
+  }
+
+  static SharedTicker = new Ticker({ autoStart: true });
 
 
 }

@@ -19,6 +19,7 @@ export default class AbstractShader {
     this.fragmentShader = null;
     this.positionAttributeLocation = null;
     this.transform = null;
+    this.positionBuffer = null;
   }
 
   /**

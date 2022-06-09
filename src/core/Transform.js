@@ -6,7 +6,7 @@ export default class Transform {
   /**
    * @param {Matrix2d} projection - The projection matrix.
    */
-  constructor(projection, isTexture = false) {
+  constructor(projection, isTexture = false, isText = false) {
     this._projection = projection;
     this.worldTransform = new Matrix2d().identity();
     this._originWorldTransform = new Matrix2d().identity();
@@ -16,13 +16,14 @@ export default class Transform {
     this.position = new Vector2();
     this.scale = new Vector2(1, 1);
 
-
     this.pivot = new Vector2();
 
     if (isTexture) {
       this.isTexture = true;
       this.pivot.set(0.5, 0.5);
     }
+
+    this.isText = isText;
 
     this._rotation = 0;
     this._width = 0;
@@ -56,6 +57,9 @@ export default class Transform {
     lt.translate(this.position);
     lt.rotate(this._rotation);
     lt.scale((this._width || 1) * this.scale.x, (this._height || 1) * this.scale.y);
+    if (this.isText) {
+      lt.scale(-1, 1);
+    }
     lt.translate(-this.pivot.x, -this.pivot.y);
   }
 
@@ -82,6 +86,9 @@ export default class Transform {
       wt.translate(this.position.x / (this.parent.width || 1), this.position.y / (this.parent.height || 1));
       wt.scale((this._width || 1) * this.scale.x / (this.parent.width || 1), (this._height || 1) * this.scale.y / (this.parent.height || 1));
       wt.rotate(this._rotation);
+      if (this.isText) {
+        wt.scale(-1, 1);
+      }
       wt.translate(-this.pivot.x, -this.pivot.y);
     }
     else {

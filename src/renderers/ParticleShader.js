@@ -316,7 +316,6 @@ export default class ParticleShader extends SimpleShader {
         Math.floor(state.bornParticles + state.birthRate * dt * 1000));
       state.bornParticles = currentNum;
     }
-    console.log(numPart);
     if (numPart <= 0) {
       return;
     }

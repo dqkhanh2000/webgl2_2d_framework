@@ -1,3 +1,4 @@
+import EventEmitter from "eventemitter3";
 import Color from "../math/Color";
 import Vector2 from "../math/vector2";
 import pool from "../system/pooling";
@@ -5,11 +6,12 @@ import Container from "./Container";
 import Core from "./Core";
 import { Tween } from "./tween";
 
-export default class Engine2D {
+export default class Engine2D extends EventEmitter {
 
   static Core = null;
 
   constructor() {
+    super();
     this.core = new Core();
   }
 
@@ -36,6 +38,7 @@ export default class Engine2D {
   }
 
   update() {
+    this.emit("update");
     this.updateTransform();
     this.render();
   }

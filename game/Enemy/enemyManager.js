@@ -199,13 +199,18 @@ export class EnemyManager extends Container {
 
   removeEnemy(enemy) {
     if (!this.isRunTween) {
-      this.removeChild(enemy);
+      // this.removeChild(enemy);
       let index = this.listEnemy.indexOf(enemy);
       if (index >= 0) {
         this.listEnemy.splice(index, 1);
-        enemy.destroy();
         if (enemy.type === "ship") {
           this.playSoundExplode();
+        }
+        else {
+          try {
+            enemy.onEnemyDead();
+          }
+          catch (e) {}
         }
       }
     }

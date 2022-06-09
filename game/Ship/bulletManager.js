@@ -35,7 +35,7 @@ export class BulletManager extends Container {
       let index = this.enemy.indexOf(go);
       if (index >= 0) {
         this.enemy.splice(index, 1);
-        go.destroy();
+        go.onEnemyDead();
       }
     }
   }

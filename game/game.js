@@ -10,6 +10,8 @@ import { Sprite } from "../src/core/Sprite";
 import { Tween } from "../src/core/tween";
 import { GameUI } from "./gameUI";
 import Background from "./background";
+import Font from "../src/core/Font";
+import Text from "../src/core/Text";
 
 
 export class MyGame {
@@ -31,6 +33,7 @@ export class MyGame {
   }
 
   load() {
+    Font.defaultFont(this.core.gl);
     Loader.addAnimationSprite("./dist/images/animation/ship/", 16);
     Loader.addAnimationSprite("./dist/images/animation/boss/", 48);
     Loader.addAnimationSprite("./dist/images/animation/explosion/", 20);
@@ -53,6 +56,7 @@ export class MyGame {
   init() {
     this.initBackground();
     this.initUI();
+    this.initFPSWatcher();
   }
 
   initBackground() {
@@ -65,6 +69,25 @@ export class MyGame {
     this.core.stage.addChild(this.gameUI);
     this.gameUI.on("loadGame", this.playGame, this);
     this.gameUI.initStartUI();
+
+  }
+
+  initFPSWatcher() {
+    this.fpsWatcher = new Text(Font._defaultFont, "fps 0");
+    this.fpsWatcher.transform.position.set(40, 70);
+    this.fpsWatcher.transform.scale.set(-4, -4);
+    this.core.stage.addChild(this.fpsWatcher);
+    let lastTime = 0;
+    let callTimes = 0;
+    this.core.on("update", () => {
+      callTimes++;
+      let currentTime = performance.now();
+      if (currentTime - lastTime > 1000) {
+        this.fpsWatcher.text = `fps ${callTimes}`;
+        lastTime = currentTime;
+        callTimes = 0;
+      }
+    });
   }
 
   playGame() {
@@ -169,7 +192,7 @@ export class MyGame {
     this.ship.destroy();
     this.enemyManager.destroy();
     this.canShoot = false;
-    this.level=2;
+    this.level = 2;
     this.checkLevel = 3;
     this.gameUI.initWinUI();
     console.log("win");

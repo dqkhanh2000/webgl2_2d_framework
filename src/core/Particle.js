@@ -1,6 +1,6 @@
-import Container from "../core/Container";
+import Container from "./Container";
 import Ticker from "../system/ticker";
-import ParticleShader from "./ParticleShader";
+import ParticleShader from "../renderers/ParticleShader";
 
 export default class Particle extends Container {
 

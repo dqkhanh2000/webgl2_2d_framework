@@ -25,6 +25,7 @@ export class AnimatedSprite extends Sprite {
   /**
    * @param {WebGLRenderingContext} gl - The WebGL rendering context.
    * @param {Array<Texture>} textures - The texture contain image will be renderer.
+   * @param {AnimationConfig} config - The animation config.
    * */
   constructor(gl, textures, config = AnimationConfig.default) {
     super(gl, textures[0]);

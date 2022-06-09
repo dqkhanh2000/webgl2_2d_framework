@@ -5,8 +5,10 @@ import Loader from "../src/core/Loader";
 import { Ship, ShipEvent } from "./Ship/ship";
 import { EnemyManager, EnemyManagerEvent } from "./Enemy/enemyManager";
 import { BulletEvent, BulletManager } from "./Ship/bulletManager";
+import { Howl, Howler } from "howler";
 import { Sprite } from "../src/core/Sprite";
 import { Tween } from "../src/core/tween";
+import { GameUI } from "./gameUI";
 
 
 export class MyGame {
@@ -16,6 +18,8 @@ export class MyGame {
     this.core.resizeCanvasToDisplaySize();
     this.numEnemy = 17;
     this.delaySpawn = true;
+    this.speed = 70;
+    this.delayAttack = true;
     this.checkLevel = 3;
     this.canShoot = false;
     this.load();
@@ -41,43 +45,10 @@ export class MyGame {
   }
 
   initUI() {
-    let texturebgUI = TextureCache.get("./dist/images/UI/logo.png");
-    let bgUI = new Sprite(this.core.gl, texturebgUI);
-    bgUI.transform.position.x = this.core.core.gl.canvas.width / 2;
-    bgUI.transform.position.y = this.core.core.gl.canvas.height / 2 - 200;
-    bgUI.transform.scale.set(1, 1);
-    this.core.stage.addChild(bgUI);
-
-    let textureButtonStart = TextureCache.get("./dist/images/UI/buttonStart.png");
-    let buttonStart = new Sprite(this.core.gl, textureButtonStart);
-    buttonStart.transform.position.x = this.core.core.gl.canvas.width / 2;
-    buttonStart.transform.position.y = this.core.core.gl.canvas.height / 2 + 50;
-    buttonStart.transform.scale.set(1.5, 1.5);
-
-    this.core.stage.addChild(buttonStart);
-    window.addEventListener("mousedown", (e) => {
-      if (!buttonStart._destroyed) {
-        if (e.pageX >= buttonStart.transform.position.x - buttonStart.transform.width / 2
-        && e.pageX < buttonStart.transform.position.x + buttonStart.transform.width / 2) {
-          if (e.pageY >= buttonStart.transform.position.y - buttonStart.transform.height / 2
-          && e.pageY < buttonStart.transform.position.y + buttonStart.transform.height / 2) {
-            let tweenRotate = Tween.createTween({ x: 1.5 }, { x: 1 }, {
-              duration : 0.2,
-              yoyo     : true,
-              repeat   : 1,
-              onUpdate : (data) => {
-                buttonStart.transform.scale.set(data.x, data.x);
-              },
-              onComplete: () => {
-                this.playGame();
-                bgUI.destroy();
-                buttonStart.destroy();
-              },
-            }).start();
-          }
-        }
-      }
-    });
+    this.gameUI = new GameUI(this.core.gl);
+    this.core.stage.addChild(this.gameUI);
+    this.gameUI.on("loadGame", this.playGame, this);
+    this.gameUI.initStartUI();
   }
 
   playGame() {
@@ -85,18 +56,48 @@ export class MyGame {
     this.spawnEnemy();
     this.initBulletManager();
     this.initController();
+    this.playBackgroundMusic();
+  }
+
+  playBackgroundMusic() {
+    this.music = new Howl({
+      src    : ["../assets/audio/music_bg.mp3"],
+      loop : true,
+      volume : 1,
+      autoplay : true,
+    });
   }
 
   initController() {
-    window.addEventListener("mousemove", (e) => {
-      this.ship.updatePosition(e.pageX, e.pageY);
+    Ticker.SharedTicker.add((dt) => {
+      window.addEventListener("mousemove", (e) => {
+        this.ship.updatePosition(e.pageX, e.pageY);
+        if (this.delayAttack) {
+          setTimeout(() => {
+            if (this.canShoot) {
+              this.spawnBullet(e);
+            }
+            this.delayAttack = true;
+          }, this.speed);
+          this.delayAttack = false;
+        }
+      });
     });
 
     this.core.core.gl.canvas.addEventListener("click", (e) => {
       if (this.canShoot) {
         this.spawnBullet(e);
+        this.sound = new Howl({
+          src    : ["../assets/audio/sfx_shoot.wav"],
+          volume : 0.5,
+        });
+
+        this.sound.play();
       }
     });
+    // this.core.core.gl.canvas.addEventListener("click", (e) => {
+
+    // });
   }
 
   spawnShip() {
@@ -132,11 +133,25 @@ export class MyGame {
   }
 
   defeat() {
+    var sound = new Howl({
+      src    : ["../assets/audio/sfx_explosion.mp3"],
+      volume : 0.5,
+    });
+    this.music.stop();
+    sound.play();
     this.ship.destroy();
+    this.enemyManager.destroy();
+    this.canShoot = false;
+    this.gameUI.initGameOverUI();
     console.log("on lose");
   }
 
   win() {
+    this.music.stop();
+    this.ship.destroy();
+    this.enemyManager.destroy();
+    this.canShoot = false;
+    this.gameUI.initWinUI();
     console.log("win");
   }
 }

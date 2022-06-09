@@ -12,12 +12,12 @@ export class Ship extends AnimatedSprite {
     for (let i = 1; i <= 16; i++) {
       textures.push(TextureCache.get(`./dist/images/animation/ship/${i}.png`));
     }
-    super(gl, textures, { duration: 0.2, loop: true, autoPlay: true });
+    super(gl, textures, { duration: 0.5, loop: true, autoPlay: true });
     this.gl = gl;
     this.listEnemy = [];
 
-    this.transform.position.x = 100;
-    this.transform.position.y = 100;
+    this.transform.position.x = this.gl.canvas.width/2;
+    this.transform.position.y = 800;
     this.transform.rotation = -Math.PI / 2;
     this.health = 3;
     this.setupGlow();

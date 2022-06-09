@@ -6,6 +6,7 @@ import Ticker from "../../src/system/ticker";
 import { Enemy } from "./enemy";
 import Utils from "../Helpers/Utils";
 import { ShipEvent } from "../Ship/ship";
+import { Howl, Howler } from "howler";
 
 export const EnemyManagerEvent = Object.freeze({
   OnClearEnemy : "clear-enemy",
@@ -114,13 +115,24 @@ export class EnemyManager extends Container {
       if (index >= 0) {
         this.listEnemy.splice(index, 1);
         enemy.destroy();
+        if (enemy.type === "ship") {
+          this.playSoundExplode();
+        }
       }
     }
     let shipList = this.getEnemyShip();
     if (shipList.length === 0) {
       this.emit(EnemyManagerEvent.OnClearEnemy, this);
     }
+  }
 
+  playSoundExplode() {
+    var sound = new Howl({
+      src    : ["../../assets/audio/sfx_enemy_explode.mp3"],
+      volume : 0.5,
+    });
+
+    sound.play();
   }
 
   getEnemyShip() {

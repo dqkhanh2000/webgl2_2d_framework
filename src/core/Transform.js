@@ -77,18 +77,11 @@ export default class Transform {
 
     if (parentTransform) {
       let wt = this.worldTransform;
-      wt.copyFrom(this._originWorldTransform);
-
-      // wt.translate(this.parent.globalPivot.x, this.parent.globalPivot.y);
-      wt.translate(this.parent.globalPosition);
-      wt.rotate(this.parent.globalRotation);
-      wt.scale(this.parent.globalScale.x, this.parent.globalScale.y);
-      // wt.translate(-this.parent.globalPivot.x, -this.parent.globalPivot.y);
-
-      wt.translate(this.pivot);
-      wt.translate(this.position);
+      wt.copyFrom(this.parent.worldTransform);
+      wt.translate(this.pivot.x, this.pivot.y);
+      wt.translate(this.position.x / (this.parent.width || 1), this.position.y / (this.parent.height || 1));
+      wt.scale((this._width || 1) * this.scale.x / (this.parent.width || 1), (this._height || 1) * this.scale.y / (this.parent.height || 1));
       wt.rotate(this._rotation);
-      wt.scale((this._width || 1) * this.scale.x, (this._height || 1) * this.scale.y);
       wt.translate(-this.pivot.x, -this.pivot.y);
     }
     else {

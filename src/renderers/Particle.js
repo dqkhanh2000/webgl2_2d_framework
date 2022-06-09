@@ -5,8 +5,9 @@ import ParticleShader from "./ParticleShader";
 export default class Particle extends Container {
 
   // eslint-disable-next-line max-params
-  constructor(x, y, numParticles, birthRate, minLifeRange, maxLifeRange, minTheta, maxTheta, minSpeed, maxSpeed, gravity) {
+  constructor(texture, x, y, numParticles, birthRate, minLifeRange, maxLifeRange, minTheta, maxTheta, minSpeed, maxSpeed, gravity) {
     super();
+    this.texture = texture;
     this.numParticles = numParticles;
     this.birthRate = birthRate;
     this.minLifeRange = minLifeRange;
@@ -17,8 +18,8 @@ export default class Particle extends Container {
     this.maxSpeed = maxSpeed;
     this.gravity = gravity;
     this.canPlay = false;
-    this.x = x;
-    this.y = y;
+    this._x = x;
+    this._y = y;
   }
 
   _initBeforeFirstRender() {
@@ -34,6 +35,7 @@ export default class Particle extends Container {
       if (this.minSpeed > this.maxSpeed) {
         throw "Invalid min-max speed range.";
       }
+      this.convertPositionToClipSpace();
       this.state = {};
       this.state.numParticles = this.numParticles;
       this.state.birthRate = this.birthRate;
@@ -44,7 +46,8 @@ export default class Particle extends Container {
       this.state.minSpeed = this.minSpeed;
       this.state.maxSpeed = this.maxSpeed;
       this.state.gravity = this.gravity;
-      this.state.origin = [this.x, this.y];
+      this.state.origin = [this.particleX, this.particleY];
+      this.state.pause = false;
 
       this.state.bornParticles = 0;
       this.state.read = 0;
@@ -52,6 +55,7 @@ export default class Particle extends Container {
       this.state.oldTimestamp = 0.0;
       this.state.totalTime = 0.0;
       this.shader = new ParticleShader(this.gl);
+      this.shader.texture = this.texture;
       this.shader.init(this.state);
     }
     else {
@@ -61,6 +65,9 @@ export default class Particle extends Container {
 
   play() {
     this.canPlay = true;
+    if (this.state) {
+      this.state.pause = false;
+    }
   }
 
   _render() {
@@ -68,4 +75,45 @@ export default class Particle extends Container {
       this.shader.renderParticle(Ticker.SharedTicker.deltaTime, this.state);
     }
   }
+
+  convertPositionToClipSpace() {
+    this.particleX = (this.x / this.gl.canvas.width) * 2 - 1;
+    this.particleY = -((this.y / this.gl.canvas.height) * 2 - 1);
+    if (this.state && this.state.origin) {
+      this.state.origin[0] = this.particleX;
+      this.state.origin[1] = this.particleY;
+    }
+  }
+
+  pause() {
+    this.state.pause = true;
+  }
+
+  stop() {
+    this.canPlay = false;
+  }
+
+  get x() {
+    return this._x;
+  }
+
+  set x(value) {
+    if (this._x !== value) {
+      this._x = value;
+      this.convertPositionToClipSpace();
+    }
+  }
+
+  get y() {
+    return this._y;
+  }
+
+  set y(value) {
+    if (this._y !== value) {
+      this._y = value;
+      this.convertPositionToClipSpace();
+    }
+  }
+
+
 }

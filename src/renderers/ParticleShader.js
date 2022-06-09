@@ -10,6 +10,7 @@ export default class ParticleShader extends SimpleShader {
 
   constructor(gl) {
     super(gl);
+    this.texture = null;
   }
 
   init(state) {
@@ -40,7 +41,6 @@ export default class ParticleShader extends SimpleShader {
   }
 
   _setupParticleBufferVAO(buffers, vao) {
-
     this.gl.bindVertexArray(vao);
 
     for (let i = 0; i < buffers.length; i++) {
@@ -140,21 +140,76 @@ export default class ParticleShader extends SimpleShader {
         location      : this.gl.getAttribLocation(this.renderProgram, "i_Position"),
         numComponents : 2,
         type          : this.gl.FLOAT,
+        divisor       : 1,
+      },
+
+      // eslint-disable-next-line camelcase
+      i_Age: {
+        location      : this.gl.getAttribLocation(this.renderProgram, "i_Age"),
+        numComponents : 1,
+        type          : this.gl.FLOAT,
+        divisor       : 1,
+      },
+      // eslint-disable-next-line camelcase
+      i_Life: {
+        location      : this.gl.getAttribLocation(this.renderProgram, "i_Life"),
+        numComponents : 1,
+        type          : this.gl.FLOAT,
+        divisor       : 1,
       },
     };
 
-    /* These buffers shall contain data about particles. */
-    this.buffers = [
-      this.gl.createBuffer(),
-      this.gl.createBuffer(),
-    ];
-    /* We'll have 4 VAOs... */
     this.vaos = [
       this.gl.createVertexArray(), /* for updating buffer 1 */
       this.gl.createVertexArray(), /* for updating buffer 2 */
       this.gl.createVertexArray(), /* for rendering buffer 1 */
       this.gl.createVertexArray(), /* for rendering buffer 2 */
     ];
+    /* These buffers shall contain data about particles. */
+    this.buffers = [
+      this.gl.createBuffer(),
+      this.gl.createBuffer(),
+    ];
+    /* We'll have 4 VAOs... */
+
+    var spriteVertexData
+    = new Float32Array([
+      1, 1,
+      1, 1,
+
+      -1, 1,
+      0, 1,
+
+      -1, -1,
+      0, 0,
+
+      1, 1,
+      1, 1,
+
+      -1, -1,
+      0, 0,
+
+      1, -1,
+      1, 0]);
+    var spriteAttributeLocations = {
+      // eslint-disable-next-line camelcase
+      i_Coord: {
+        location      : this.gl.getAttribLocation(this.renderProgram, "i_Coord"),
+        numComponents : 2,
+        type          : this.gl.FLOAT,
+      },
+      // eslint-disable-next-line camelcase
+      i_TexCoord: {
+        location      : this.gl.getAttribLocation(this.renderProgram, "i_TexCoord"),
+        numComponents : 2,
+        type          : this.gl.FLOAT,
+      },
+    };
+    var spriteVertexBuffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, spriteVertexBuffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, spriteVertexData, this.gl.STATIC_DRAW);
+
+
     /* this has information about buffers and bindings for each VAO. */
     this.vaoDesc = [
       {
@@ -179,6 +234,11 @@ export default class ParticleShader extends SimpleShader {
           bufferObject : this.buffers[0],
           stride       : 4 * 6,
           attribs      : renderAttributeLocations,
+        },
+        {
+          bufferObject : spriteVertexBuffer,
+          stride       : 4 * 4,
+          attribs      : spriteAttributeLocations,
         }],
       },
       {
@@ -187,6 +247,11 @@ export default class ParticleShader extends SimpleShader {
           bufferObject : this.buffers[1],
           stride       : 4 * 6,
           attribs      : renderAttributeLocations,
+        },
+        {
+          bufferObject : spriteVertexBuffer,
+          stride       : 4 * 4,
+          attribs      : spriteAttributeLocations,
         }],
       },
     ];
@@ -223,7 +288,13 @@ export default class ParticleShader extends SimpleShader {
     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
     this.gl.enable(this.gl.BLEND);
-    this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+    this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE);
+
+    this.particleTexture = this.gl.createTexture();
+    this.gl.bindTexture(this.gl.TEXTURE_2D, this.particleTexture);
+    this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA8, 32, 32, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.texture.texture.image);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
   }
 
   renderParticle(dt, state) {
@@ -231,15 +302,26 @@ export default class ParticleShader extends SimpleShader {
     /* Here's where birth rate parameter comes into play.
             We add to the number of active particles in the system
             based on birth rate and elapsed time. */
-    if (state.bornParticles < this.numParticles) {
+    if (state.pause) {
+      if (numPart < 0) {
+        return;
+      }
+
+      let currentNum = Math.min(state.bornParticles,
+        Math.floor(state.bornParticles - state.birthRate * dt * 1000));
+      state.bornParticles = currentNum;
+    }
+    else if (state.bornParticles < this.numParticles) {
       let currentNum = Math.min(this.numParticles,
         Math.floor(state.bornParticles + state.birthRate * dt * 1000));
       state.bornParticles = currentNum;
     }
+    console.log(numPart);
+    if (numPart <= 0) {
+      return;
+    }
     /* Set the previous update timestamp for calculating time delta in the
             next frame. */
-
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     this.gl.useProgram(this.updateProgram);
 
     /* Most of the following is trivial setting of uniforms */
@@ -312,7 +394,14 @@ export default class ParticleShader extends SimpleShader {
             that we've written the updated data to. */
     this.gl.bindVertexArray(this.vaos[state.read + 2]);
     this.gl.useProgram(this.renderProgram);
-    this.gl.drawArrays(this.gl.POINTS, 0, numPart);
+    this.gl.enable(this.gl.BLEND);
+    this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
+    this.gl.activeTexture(this.gl.TEXTURE0);
+    this.gl.bindTexture(this.gl.TEXTURE_2D, this.particleTexture);
+    this.gl.uniform1i(
+      this.gl.getUniformLocation(this.renderProgram, "u_Sprite"), 0,
+    );
+    this.gl.drawArraysInstanced(this.gl.TRIANGLES, 0, 6, numPart);
 
     /* Finally, we swap read and write buffers. The updated state will be
             rendered on the next frame. */

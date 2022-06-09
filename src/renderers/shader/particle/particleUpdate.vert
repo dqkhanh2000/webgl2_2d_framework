@@ -3,6 +3,7 @@ precision mediump float;
 
 uniform float u_TimeDelta;
 uniform sampler2D u_RgNoise;
+uniform sampler2D u_ForceField;
 uniform vec2 u_Gravity;
 uniform vec2 u_Origin;
 uniform float u_MinTheta;
@@ -21,21 +22,23 @@ out float v_Life;
 out vec2 v_Velocity;
 
 void main() {
-    if (i_Age >= i_Life) {
-        ivec2 noise_coord = ivec2(gl_VertexID % 512, gl_VertexID / 512);
-        vec2 rand = texelFetch(u_RgNoise, noise_coord, 0).rg;
-        float theta = u_MinTheta + rand.r*(u_MaxTheta - u_MinTheta);
-        float x = cos(theta);
-        float y = sin(theta);
-        v_Position = u_Origin;
-        v_Age = 0.0;
-        v_Life = i_Life;
-        v_Velocity = vec2(x, y) * (u_MinSpeed + rand.g * (u_MaxSpeed - u_MinSpeed));
-    } else {
-        v_Position = i_Position + i_Velocity * u_TimeDelta;
-        v_Age = i_Age + u_TimeDelta;
-        v_Life = i_Life;
-        v_Velocity = i_Velocity + u_Gravity * u_TimeDelta;
-    }
+  vec2 force = 4.0 * (2.0 * texture(u_ForceField, i_Position).rg - vec2(1.0));
+  if (i_Age >= i_Life) {
+    ivec2 noise_coord = ivec2(gl_VertexID % 512, gl_VertexID / 512);
+    vec2 rand = texelFetch(u_RgNoise, noise_coord, 0).rg;
+    float theta = u_MinTheta + rand.r*(u_MaxTheta - u_MinTheta);
+    float x = cos(theta);
+    float y = sin(theta);
+    v_Position = u_Origin;
+    v_Age = 0.0;
+    v_Life = i_Life;
+    v_Velocity =
+      vec2(x, y) * (u_MinSpeed + rand.g * (u_MaxSpeed - u_MinSpeed));
+  } else {
+    v_Position = i_Position + i_Velocity * u_TimeDelta;
+    v_Age = i_Age + u_TimeDelta;
+    v_Life = i_Life;
+    v_Velocity = i_Velocity + u_Gravity * u_TimeDelta + force * u_TimeDelta;
+  }
 
 }

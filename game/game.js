@@ -9,6 +9,7 @@ import { Howl, Howler } from "howler";
 import { Sprite } from "../src/core/Sprite";
 import { Tween } from "../src/core/tween";
 import { GameUI } from "./gameUI";
+import Background from "./background";
 
 
 export class MyGame {
@@ -35,6 +36,8 @@ export class MyGame {
     Loader.addAnimationSprite("./dist/images/animation/explosion/", 20);
     Loader.addSrc("./dist/images/sad.png");
     Loader.addSrc("./dist/images/glow.png");
+    Loader.addSrc("./dist/images/bg_top.png");
+    Loader.addSrc("./dist/images/bg_bottom.png");
     Loader.addSrc("./dist/images/redBullet.png");
     Loader.addSrc("./dist/images/heart.png");
     Loader.addSrc("./dist/images/bullet_enemy.png");
@@ -46,7 +49,17 @@ export class MyGame {
     Loader.addSrc("./dist/images/UI/buttonNext.png");
     Loader.addSrc("./dist/images/UI/levelComplete.png");
     Loader.addSrc("./dist/images/UI/logo.png");
-    Loader.load(this.core.gl, this.initUI, this);
+    Loader.load(this.core.gl, this.init, this);
+  }
+
+  init() {
+    this.initBackground();
+    this.initUI();
+  }
+
+  initBackground() {
+    this.bg = new Background();
+    this.core.stage.addChild(this.bg);
   }
 
   initUI() {

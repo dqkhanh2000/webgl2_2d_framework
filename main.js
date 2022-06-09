@@ -79,6 +79,7 @@ export class MyGame {
         text.transform.rotation += 0.01;
       });
     });
+  }
 
     let a = () => {
       let txure = TextureCache.get("dist/images/sad.png");

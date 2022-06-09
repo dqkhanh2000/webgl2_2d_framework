@@ -25,9 +25,8 @@ export class MyGame {
   }
 
   load() {
-    for (let i = 1; i <= 16; i++) {
-      Loader.addSrc(`./dist/images/ship/ship_${i}.png`);
-    }
+    Loader.addAnimationSprite("./dist/images/animation/ship/", 16);
+    Loader.addAnimationSprite("./dist/images/animation/explosion/", 20);
     Loader.addSrc("./dist/images/sad.png");
     Loader.addSrc("./dist/images/glow.png");
     Loader.addSrc("./dist/images/redBullet.png");

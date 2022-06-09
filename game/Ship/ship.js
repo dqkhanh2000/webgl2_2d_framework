@@ -1,6 +1,5 @@
 import { AnimatedSprite } from "../../src/core/AnimatedSprite";
-import Particle, { ParticleConfig } from "../../src/core/Particle";
-import { Sprite } from "../../src/core/Sprite";
+import Particle from "../../src/core/Particle";
 import { TextureCache } from "../../src/core/Texture";
 
 export const ShipEvent = Object.freeze({
@@ -11,7 +10,7 @@ export class Ship extends AnimatedSprite {
   constructor(gl) {
     let textures = [];
     for (let i = 1; i <= 16; i++) {
-      textures.push(TextureCache.get(`./dist/images/ship/ship_${i}.png`));
+      textures.push(TextureCache.get(`./dist/images/animation/ship/${i}.png`));
     }
     super(gl, textures, { duration: 0.2, loop: true, autoPlay: true });
     this.gl = gl;
@@ -22,6 +21,22 @@ export class Ship extends AnimatedSprite {
     this.transform.rotation = -Math.PI / 2;
     this.health = 3;
     this.setupGlow();
+    this.initExplosion();
+
+  }
+
+  initExplosion() {
+    let textures = [];
+    for (let i = 1; i <= 16; i++) {
+      textures.push(TextureCache.get(`./dist/images/animation/explosion/${i}.png`));
+    }
+    this.explosion = new AnimatedSprite(this.gl, textures, {
+      duration : 0.5,
+      loop     : false,
+      autoPlay : false,
+    });
+    this.addChild(this.explosion);
+
 
   }
 

@@ -17,6 +17,7 @@ export class AnimationConfig {
     this.autoPlay = defaultConfig.autoPlay;
     this.onComplete = defaultConfig.onComplete;
     this.onLoop = defaultConfig.onLoop;
+    this._parent = null;
   }
 }
 
@@ -37,14 +38,22 @@ export class AnimatedSprite extends Sprite {
     this.isCompleted = false;
     this._curTimeCount = 0;
     Ticker.SharedTicker.add(this._update, this);
+
+    this.on("added", this._onAddedToParent, this);
   }
 
   play() {
     this.isPlaying = true;
+    if (this._parent) {
+      this._parent.addChild(this);
+    }
   }
 
   stop() {
     this.isPlaying = false;
+    if (this._parent) {
+      this._parent.removeChild(this);
+    }
   }
 
   reset() {
@@ -66,6 +75,9 @@ export class AnimatedSprite extends Sprite {
       else if (!this.isCompleted) {
         this.isCompleted = true;
         this.config.onComplete?.();
+        if (this._parent) {
+          this._parent.removeChild(this);
+        }
       }
     }
 
@@ -75,6 +87,19 @@ export class AnimatedSprite extends Sprite {
 
     this.progress = Math.min(this._curTimeCount / this.config.duration, 1);
     this.currentIndex = Math.floor(this.progress * this.textures.length);
+  }
+
+  _render() {
+    if (this.isPlaying) {
+      this.shader.activateShader(this.texture.texture, this.blendType);
+    }
+  }
+
+  _onAddedToParent(parent) {
+    this._parent = parent;
+    if (!this.isPlaying) {
+      this.parent.removeChild(this);
+    }
   }
 
   get currentIndex() {

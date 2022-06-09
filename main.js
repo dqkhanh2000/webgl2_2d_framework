@@ -5,6 +5,7 @@ import { Sprite } from "./src/core/Sprite";
 import Ticker from "./src/system/ticker";
 import Engine2D from "./src/core/Engine";
 import Particle from "./src/renderers/Particle";
+import { AnimatedSprite } from "./src/core/AnimatedSprite";
 
 export class MyGame {
   constructor() {
@@ -93,6 +94,23 @@ export class MyGame {
       core.update();
       // particle.update();
     });
+
+    // let anim = new AnimatedSprite()
+    let loadedTex = 0;
+    let textures = [];
+    for (let i = 1; i <= 6; i++) {
+      let tex = Texture.FromURL(core.gl, `dist/images/coin_${i}.png`);
+      textures.push(tex);
+      tex.once("load", () => {
+        loadedTex++;
+        if (loadedTex === 6) {
+          let anim = new AnimatedSprite(core.gl, textures, { duration: 0.5, loop: true, autoPlay: true });
+          core.stage.addChild(anim);
+          anim.position.x = 300;
+          anim.position.y = 150;
+        }
+      });
+    }
   }
 }
 

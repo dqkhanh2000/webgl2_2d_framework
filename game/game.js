@@ -145,12 +145,7 @@ export class MyGame {
   }
 
   defeat() {
-    var sound = new Howl({
-      src    : ["../assets/audio/sfx_explosion.mp3"],
-      volume : 0.5,
-    });
     this.music.stop();
-    sound.play();
     this.ship.destroy();
     this.enemyManager.destroy();
     this.canShoot = false;

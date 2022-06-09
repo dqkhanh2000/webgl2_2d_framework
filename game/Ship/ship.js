@@ -94,7 +94,10 @@ export class Ship extends AnimatedSprite {
   takeDamage() {
     this.health -= 1;
     let hpLost = this.listHealth.pop();
-    hpLost.destroy();
+    if (hpLost) {
+      hpLost.destroy();
+    }
+   
     if (this.health === 0) {
       this.onDead();
     }

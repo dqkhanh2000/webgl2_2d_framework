@@ -2,6 +2,7 @@ import { AnimatedSprite } from "../../src/core/AnimatedSprite";
 import Particle from "../../src/core/Particle";
 import { TextureCache } from "../../src/core/Texture";
 import { Howl, Howler } from "howler";
+import { Sprite } from "../../src/core/Sprite";
 
 export const ShipEvent = Object.freeze({
   TakeDamage : "take-damage",
@@ -16,6 +17,7 @@ export class Ship extends AnimatedSprite {
     super(gl, textures, { duration: 0.5, loop: true, autoPlay: true });
     this.gl = gl;
     this.listEnemy = [];
+    this.listHealth = [];
 
     this.transform.position.x = this.gl.canvas.width / 2;
     this.transform.position.y = 800;
@@ -23,6 +25,7 @@ export class Ship extends AnimatedSprite {
     this.health = 3;
     this.setupGlow();
     this.initExplosion();
+    this.setupHealth();
 
   }
 
@@ -76,8 +79,22 @@ export class Ship extends AnimatedSprite {
     this.particle.y = this.globalPosition.y + 25;
   }
 
+  setupHealth() {
+    let tex = TextureCache.get("./dist/images/heart.png");
+    for (let i = 0; i < this.health ; i++) {
+      let health = new Sprite(this.gl, tex);
+      health.transform.scale.set(0.5, 0.5);
+      health.transform.position.x = -70;
+      health.transform.position.y = (i - 1) * 40;
+      this.listHealth.push(health);
+      this.addChild(health);
+    }
+  }
+
   takeDamage() {
     this.health -= 1;
+    let hpLost = this.listHealth.pop();
+    hpLost.destroy();
     if (this.health === 0) {
       this.onDead();
     }

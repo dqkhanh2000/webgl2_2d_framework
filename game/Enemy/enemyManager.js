@@ -211,7 +211,6 @@ export class EnemyManager extends Container {
       }
     }
     let shipList = this.getEnemyShip();
-    console.log(shipList.length);
     if (shipList.length === 0) {
       this.emit(EnemyManagerEvent.OnClearEnemy, this);
     }

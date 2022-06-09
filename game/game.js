@@ -23,7 +23,7 @@ export class MyGame {
     this.delayAttack = true;
     this.checkLevel = 2;
     this.canShoot = false;
-    this.level = 2;
+    this.level = 1;
     this.load();
     Ticker.SharedTicker.add(() => {
       this.core.update();

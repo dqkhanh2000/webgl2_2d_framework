@@ -1,7 +1,9 @@
 import Container from "../src/core/Container";
 import { Sprite } from "../src/core/Sprite";
-import { TextureCache } from "../src/core/Texture";
+import Texture, { TextureCache } from "../src/core/Texture";
 import { Tween } from "../src/core/tween";
+import { Tweener } from "../src/core/tweener";
+import Ticker from "../src/system/ticker";
 
 export class GameUI extends Container {
   constructor(gl) {
@@ -59,11 +61,26 @@ export class GameUI extends Container {
   }
 
   initWinUI() {
+
+    let textureUI = TextureCache.get("./dist/images/UI/bgWinner.png");
+    let bgUI2 = new Sprite(this.gl, textureUI);
+    bgUI2.transform.position.x = this.gl.canvas.width / 2;
+    bgUI2.transform.position.y = this.gl.canvas.height / 2 - 100;
+    bgUI2.blendType = Texture.BLEND_TYPE.ADDITIVE;
+    bgUI2.transform.scale.set(3, 3);
+    this.addChild(bgUI2);
+
+    Ticker.SharedTicker.add((dt) => {
+      if (!bgUI2._destroyed) {
+        bgUI2.transform.rotation += 0.01;
+      }
+    });
+
     let texturebgUI = TextureCache.get("./dist/images/UI/levelComplete.png");
     let bgUI = new Sprite(this.gl, texturebgUI);
     bgUI.transform.position.x = this.gl.canvas.width / 2;
     bgUI.transform.position.y = this.gl.canvas.height / 2 - 100;
-    bgUI.transform.scale.set(2, 2);
+    bgUI.transform.scale.set(0.1, 0.1);
     this.addChild(bgUI);
 
     let textureButtonStart = TextureCache.get("./dist/images/UI/buttonNext.png");
@@ -89,6 +106,7 @@ export class GameUI extends Container {
               onComplete: () => {
                 this.emit("loadGame");
                 bgUI.destroy();
+                bgUI2.destroy();
                 buttonStart.destroy();
               },
             }).start();

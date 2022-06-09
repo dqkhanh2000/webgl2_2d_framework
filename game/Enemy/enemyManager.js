@@ -40,10 +40,11 @@ export class EnemyManager extends Container {
       let textureEnemy = this.textureEnemy;
       let enemy = new Enemy(this.gl, textureEnemy);
       enemy.type = "ship";
-      enemy.setPosition(enemy.transform.width + enemy.transform.width * i * 2, 0);
+      let margin = this.gl.canvas.width / (this.numEnemy + 1);
+      enemy.setPosition(margin * i + margin / 2, 0);
       let posY = 0;
       if (i % 2 !== 0) {
-        enemy.setPosition(enemy.transform.width + enemy.transform.width * i * 2, 100);
+        enemy.setPosition(margin * i + margin / 2, 100);
         posY = 100;
       }
       this.listEnemy.push(enemy);

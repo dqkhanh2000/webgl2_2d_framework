@@ -19,7 +19,7 @@ export class MyGame {
     this.core = new Engine2D();
     this.core.init("canvas");
     this.core.resizeCanvasToDisplaySize();
-    this.numEnemy = 17;
+    this.numEnemy = 15;
     this.delaySpawn = true;
     this.speed = 100;
     this.delayAttack = true;
@@ -52,6 +52,7 @@ export class MyGame {
     Loader.addSrc("./dist/images/UI/buttonNext.png");
     Loader.addSrc("./dist/images/UI/levelComplete.png");
     Loader.addSrc("./dist/images/UI/logo.png");
+    Loader.addSrc("./dist/images/UI/bgWinner.png");
     Loader.load(this.core.gl, this.init, this);
   }
 

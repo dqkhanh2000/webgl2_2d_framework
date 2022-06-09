@@ -1,4 +1,6 @@
+import { AnimatedSprite } from "../../src/core/AnimatedSprite";
 import { Sprite } from "../../src/core/Sprite";
+import { TextureCache } from "../../src/core/Texture";
 
 export class Enemy extends Sprite {
   constructor(gl, textureEnemy) {
@@ -6,6 +8,23 @@ export class Enemy extends Sprite {
     this.gl = gl;
     this.textureEnemy = textureEnemy;
     this.health = 1;
+    this.initExplosion();
+  }
+
+  initExplosion() {
+    let textures = [];
+    for (let i = 1; i <= 16; i++) {
+      textures.push(TextureCache.get(`./dist/images/animation/explosion/${i}.png`));
+    }
+    this.explosion = new AnimatedSprite(this.gl, textures, {
+      duration   : 0.5,
+      loop       : false,
+      autoPlay   : false,
+      onComplete : () => {
+        this.destroy();
+      },
+    });
+    this.addChild(this.explosion);
   }
 
   setPosition(x, y) {
@@ -31,7 +50,7 @@ export class Enemy extends Sprite {
   }
 
   onEnemyDead() {
-    console.log("EnemyDead");
+    this.explosion.play();
   }
 
 }

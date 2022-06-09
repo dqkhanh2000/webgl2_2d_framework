@@ -8,7 +8,7 @@ export class Boss extends AnimatedSprite {
     for (let i = 1; i <= 48; i++) {
       textures.push(TextureCache.get(`./dist/images/animation/boss/${i}.png`));
     }
-    super(gl, textures, { duration: 5, loop: true, autoPlay: true });
+    super(gl, textures, { duration: 2, loop: true, autoPlay: true });
     this.transform.rotation = -Math.PI / 2;
     this.transform.scale.set(1.5, 1.5);
     this.gl = gl;

@@ -42,6 +42,8 @@ export class MyGame {
     Loader.addSrc("./dist/images/bg_top.png");
     Loader.addSrc("./dist/images/bg_bottom.png");
     Loader.addSrc("./dist/images/redBullet.png");
+    Loader.addSrc("./dist/images/heart.png");
+    Loader.addSrc("./dist/images/bullet_enemy.png");
     Loader.addSrc("./dist/images/bullet_purple.png");
     Loader.addSrc("./dist/images/enemy/enemy_1.png");
     Loader.addSrc("./dist/images/enemy/bulletEnemy.png");

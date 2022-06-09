@@ -180,11 +180,12 @@ export class EnemyManager extends Container {
     let dy = Math.random() * 20;
     let dx = Math.random() * 20;
     this.delaySpawn = true;
-    let textureBulletEnemy = TextureCache.get("./dist/images/enemy/bulletEnemy.png");
+    let textureBulletEnemy = TextureCache.get("./dist/images/bullet_enemy.png");
     for (let i = 0; i < 3; i++) {
       let bullet;
       bullet = new Bullet(this.gl, textureBulletEnemy);
-      bullet.transform.scale.set(0.5, 0.5);
+      bullet.transform.width = 25;
+      bullet.transform.height = 50;
       bullet.type = "bullet";
       this.addChild(bullet);
       bullet.setPosition(this.boss.transform.position.x - 200 + 200 * i, this.boss.transform.position.y - 0.1 * i);

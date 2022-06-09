@@ -16,7 +16,9 @@ export class Bullet extends Sprite {
 
   updatePosition() {
     Ticker.SharedTicker.add((dt, msdt) => {
-      this.transform.position.y -= dt * 1000;
+      if (!this._destroyed) {
+        this.transform.position.y -= dt * 1000;
+      }
     });
   }
 }

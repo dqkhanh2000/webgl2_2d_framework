@@ -10,6 +10,9 @@ export default class Utils {
   }
 
   static isCollision(go1, go2) {
+    if (go1.transform === null || go2.transform === null) {
+      return false;
+    }
     // eslint-disable-next-line max-len
     if (this.rectIntersect(go1.transform.position.x, go1.transform.position.y, go1.transform.width, go1.transform.height, go2.transform.position.x, go2.transform.position.y, go2.transform.width, go2.transform.height)) {
       return true;

@@ -4,8 +4,8 @@ import Engine2D from "../src/core/Engine";
 import Particle from "../src/core/Particle";
 import Loader from "../src/core/Loader";
 import { Ship, ShipEvent } from "./Ship/ship";
-import { EnemyManager } from "./Enemy/enemyManager";
-import { BulletManager } from "./Ship/bulletManager";
+import { EnemyManager, EnemyManagerEvent } from "./Enemy/enemyManager";
+import { BulletEvent, BulletManager } from "./Ship/bulletManager";
 
 
 export class MyGame {
@@ -50,6 +50,7 @@ export class MyGame {
   playGame() {
     this.spawnShip();
     this.spawnEnemy();
+    this.initBulletManager();
     this.initController();
   }
 
@@ -66,23 +67,39 @@ export class MyGame {
   spawnShip() {
     this.ship = new Ship(this.core.gl);
     this.ship.on(ShipEvent.TakeDamage, this.ship.takeDamage, this.ship);
-
-    let textureBullet = TextureCache.get("./dist/images/redBullet.png");
-    this.bulletManager = new BulletManager(this.core.gl, this.checkLevel, textureBullet);
-    this.core.stage.addChild(this.bulletManager);
     this.core.stage.addChild(this.ship);
+    this.ship.on(ShipEvent.OnDead, this.defeat, this);
   }
 
   spawnEnemy() {
     let textureEnemy = TextureCache.get("./dist/images/enemy/enemy_1.png");
     this.enemyManager = new EnemyManager(this.core.gl, this.numEnemy, textureEnemy, this.ship);
     this.core.stage.addChild(this.enemyManager);
+    this.enemyManager.on(EnemyManagerEvent.OnClearEnemy, this.win, this);
 
   }
 
   spawnBullet(e) {
     this.bulletManager.updatePosition(e.pageX, e.pageY);
     this.bulletManager.spawnBullet();
+  }
+
+  initBulletManager() {
+    let shipEnemy = this.enemyManager.getEnemyShip();
+    let textureBullet = TextureCache.get("./dist/images/redBullet.png");
+    this.bulletManager = new BulletManager(this.core.gl, this.checkLevel, textureBullet, shipEnemy);
+    this.core.stage.addChild(this.bulletManager);
+
+    this.bulletManager.on(BulletEvent.RemoveEnemy, this.enemyManager.removeEnemy, this.enemyManager);
+  }
+
+  defeat() {
+    this.ship.destroy();
+    console.log("on lose");
+  }
+
+  win() {
+    console.log("win");
   }
 }
 document.addEventListener("DOMContentLoaded", () => {

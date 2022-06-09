@@ -5,14 +5,33 @@ export class Enemy extends Sprite {
     super(gl, textureEnemy);
     this.gl = gl;
     this.textureEnemy = textureEnemy;
+    this.health = 1;
   }
 
   setPosition(x, y) {
-    this.transform.position.x = x;
-    this.transform.position.y = y;
+    if (!this.destroyed) {
+      this.transform.position.x = x;
+      this.transform.position.y = y;
+    }
   }
 
   updatePosition(y) {
-    this.transform.position.y += y;
+    if (!this.destroyed) {
+      this.transform.position.y += y;
+    }
   }
+
+  takeDamage() {
+    this.health -= 1;
+    return this.health;
+  }
+
+  getHealth() {
+    return this.health;
+  }
+
+  onEnemyDead() {
+    console.log("EnemyDead");
+  }
+
 }

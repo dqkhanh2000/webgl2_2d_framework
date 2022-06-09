@@ -1,7 +1,6 @@
 import { TextureCache } from "../src/core/Texture";
 import Ticker from "../src/system/ticker";
 import Engine2D from "../src/core/Engine";
-import Particle from "../src/core/Particle";
 import Loader from "../src/core/Loader";
 import { Ship, ShipEvent } from "./Ship/ship";
 import { EnemyManager, EnemyManagerEvent } from "./Enemy/enemyManager";
@@ -17,7 +16,8 @@ export class MyGame {
     this.core.resizeCanvasToDisplaySize();
     this.numEnemy = 17;
     this.delaySpawn = true;
-    this.checkLevel = 1;
+    this.checkLevel = 3;
+    this.canShoot = false;
     this.load();
     Ticker.SharedTicker.add(() => {
       this.core.update();
@@ -94,7 +94,9 @@ export class MyGame {
     });
 
     this.core.core.gl.canvas.addEventListener("click", (e) => {
-      this.spawnBullet(e);
+      if (this.canShoot) {
+        this.spawnBullet(e);
+      }
     });
   }
 
@@ -110,6 +112,9 @@ export class MyGame {
     this.enemyManager = new EnemyManager(this.core.gl, this.numEnemy, textureEnemy, this.ship);
     this.core.stage.addChild(this.enemyManager);
     this.enemyManager.on(EnemyManagerEvent.OnClearEnemy, this.win, this);
+    this.enemyManager.on(EnemyManagerEvent.RunTweenDone, () => {
+      this.canShoot = true;
+    }, this);
 
   }
 

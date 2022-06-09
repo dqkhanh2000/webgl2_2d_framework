@@ -50,7 +50,7 @@ export class BulletManager extends Container {
         bullet.setPosition(this.posX, this.posY);
         this.listBullet.push(bullet);
       }
-      else if (this.checkLevel === 2) {
+      else if (this.checkLevel === 2 || this.checkLevel === 3) {
         bullet = new Bullet(this.gl, this.textureBullet);
         this.addChild(bullet);
         bullet.setPosition(this.posX - 10 + 20 * i, this.posY - 0.1 * i);

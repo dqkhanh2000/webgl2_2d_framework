@@ -8,7 +8,8 @@ import Utils from "../Helpers/Utils";
 import { ShipEvent } from "../Ship/ship";
 
 export const EnemyManagerEvent = Object.freeze({
-  OnClearEnemy: "clear-enemy",
+  OnClearEnemy : "clear-enemy",
+  RunTweenDone : "run-tween-done",
 });
 export class EnemyManager extends Container {
   constructor(gl, numEnemy, textureEnemy, player) {
@@ -42,6 +43,7 @@ export class EnemyManager extends Container {
         duration   : 1,
         onComplete : () => {
           this.isRunTween = false;
+          this.emit(EnemyManagerEvent.RunTweenDone, this);
         },
       }).start();
     }

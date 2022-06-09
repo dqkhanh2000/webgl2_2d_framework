@@ -17,7 +17,25 @@ export class Bullet extends Sprite {
   updatePosition() {
     Ticker.SharedTicker.add((dt, msdt) => {
       if (!this._destroyed) {
-        this.transform.position.y -= dt * 1000;
+        if (this.transform.position.y < 0) {
+          this.destroy();
+        }
+        else {
+          this.transform.position.y -= dt * 1000;
+        }
+      }
+    });
+  }
+
+  updatePositionBoss() {
+    Ticker.SharedTicker.add((dt, msdt) => {
+      if (!this._destroyed) {
+        if (this.transform.position.y > 900) {
+          this.destroy();
+        }
+        else {
+          this.transform.position.y += dt * 500;
+        }
       }
     });
   }

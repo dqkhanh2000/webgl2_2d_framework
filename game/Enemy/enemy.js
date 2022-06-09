@@ -5,7 +5,7 @@ export class Enemy extends Sprite {
     super(gl, textureEnemy);
     this.gl = gl;
     this.textureEnemy = textureEnemy;
-    this.health = 10;
+    this.health = 1;
   }
 
   setPosition(x, y) {

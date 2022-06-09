@@ -46,21 +46,24 @@ export class MyGame {
       sprite2.transform.position.y = 30;
       sprite.addChild(sprite2);
 
-      let sprite3 = new Sprite(core.gl, texture);
-      sprite3.transform.position.x = 30;
-      sprite3.transform.position.y = 30;
-      sprite2.addChild(sprite3);
+    this.particle = new Particle(0, 0.5, 1000, 0.1, 0.5, 1, -Math.PI, Math.PI, 0.5, 1, [0.0, -0.8]);
+    this.core.stage.addChild(this.particle);
+    Ticker.SharedTicker.add((dt, msdt) => {
 
-      let sprite4 = new Sprite(core.gl, texture);
-      sprite4.transform.position.x = 30;
-      sprite4.transform.position.y = 30;
-      sprite3.addChild(sprite4);
+      this.core.update();
+    });
+  }
 
       Ticker.SharedTicker.add((dt, msdt) => {
         sprite2.transform.rotation += 0.05;
       });
 
-    });
+  playGame() {
+    let textureShip = TextureCache.get("./dist/images/ship/ship_9.png");
+    this.ship = new Sprite(this.core.gl, textureShip);
+    this.ship.transform.position.x = 100;
+    this.ship.transform.position.y = 100;
+    this.ship.transform.rotation = -Math.PI / 2;
 
     Font.defaultFont(core.gl).once("load", () => {
       let font = Font.defaultFont(core.gl);
@@ -88,12 +91,33 @@ export class MyGame {
       let dx = Math.random();
       let dy = Math.random();
 
+
+    this.enemyManager = new Container();
+    for (let i = 0; i < this.numEnemy; i++) {
+      let textureEnemy = TextureCache.get("./dist/images/enemy/enemy_1.png");
+      let enemy = new Sprite(this.core.gl, textureEnemy);
+      // console.log(this.core.core.gl.canvas.width);
+      enemy.transform.position.x = enemy.transform.width + enemy.transform.width *i*2;
+      enemy.transform.position.y = 0;
+      this.enemyManager.addChild(enemy);
       Ticker.SharedTicker.add((dt, msdt) => {
         sprite.transform.rotation += 0.01;
         sprite.transform.position.x += dt * 100 * dx;
         sprite.transform.position.y += dt * 100 * dy;
 
       });
+    }
+    this.core.stage.addChild(this.enemyManager);
+
+    window.addEventListener("mousemove", (e) => {
+      this.ship.transform.position.x = e.pageX;
+      this.ship.transform.position.y = e.pageY;
+    });
+
+    this.core.core.gl.canvas.addEventListener("click", (e) => {
+      this.spawnBullet(e);
+    });
+  }
 
     };
 
@@ -102,8 +126,22 @@ export class MyGame {
 
 
     Ticker.SharedTicker.add((dt, msdt) => {
-      core.update();
-      // particle.update();
+      // sprite.transform.rotation += 0.01;
+      // sprite.transform.position.x += dt * 100 * dx;
+      if (!sprite._destroyed) {
+        if (sprite.transform.position.y < 10) {
+          this.particle.x = sprite.transform.position.x;
+          this.particle.y = sprite.transform.position.y;
+          if (!this.particle.canPlay) {
+            // this.particle.play();
+          }
+          sprite.destroy();
+        }
+        else {
+          sprite.transform.position.y -= dt * 1000 * dy;
+        }
+      }
+      this.core.update();
     });
 
     // let anim = new AnimatedSprite()
@@ -124,8 +162,6 @@ export class MyGame {
     }
   }
 }
-
-// run new game when document is ready
 document.addEventListener("DOMContentLoaded", () => {
   new MyGame();
 });

@@ -22,7 +22,7 @@ export class MyGame {
     this.delayAttack = true;
     this.checkLevel = 2;
     this.canShoot = false;
-    this.level = 1;
+    this.level = 2;
     this.load();
     Ticker.SharedTicker.add(() => {
       this.core.update();
@@ -36,6 +36,8 @@ export class MyGame {
     Loader.addSrc("./dist/images/sad.png");
     Loader.addSrc("./dist/images/glow.png");
     Loader.addSrc("./dist/images/redBullet.png");
+    Loader.addSrc("./dist/images/heart.png");
+    Loader.addSrc("./dist/images/bullet_enemy.png");
     Loader.addSrc("./dist/images/bullet_purple.png");
     Loader.addSrc("./dist/images/enemy/enemy_1.png");
     Loader.addSrc("./dist/images/enemy/bulletEnemy.png");

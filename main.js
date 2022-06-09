@@ -1,25 +1,28 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-loop-func */
 import Color from "./src/math/Color";
 import Matrix2d from "./src/math/Matrix2d";
 import Texture, { TextureCache } from "./src/core/Texture";
 import { Sprite } from "./src/core/Sprite";
 import Ticker from "./src/system/ticker";
 import Engine2D from "./src/core/Engine";
-import Particle from "./src/renderers/Particle";
+import Particle from "./src/core/Particle";
 import { AnimatedSprite } from "./src/core/AnimatedSprite";
+import Font from "./src/core/Font";
+import Text from "./src/core/Text";
 
 export class MyGame {
   constructor() {
     let core = new Engine2D();
     core.init("canvas");
     core.resizeCanvasToDisplaySize();
-    // let vertexBuffer = new VertexBuffer();
-    // vertexBuffer.init(core.gl);
 
     let texture = Texture.FromURL(core.gl, "dist/images/sad.png");
     texture.once("load", () => {
-      let particle = new Particle(texture, core.gl.canvas.width/4, core.gl.canvas.height/4, 100, 0.1, 0.5, 1, Math.PI / 2.0 - 0.5, Math.PI / 2.0 + 0.5, 0.5, 1, [0.0, -0.8]);
-      core.stage.addChild(particle);
-      particle.play();
+      // eslint-disable-next-line max-len
+      let particle = new Particle(texture, core.gl.canvas.width / 4, core.gl.canvas.height / 4, 100, 0.1, 0.5, 1, Math.PI / 2.0 - 0.5, Math.PI / 2.0 + 0.5, 0.5, 1, [0.0, -0.8]);
+      // core.stage.addChild(particle);
+      // particle.play();
 
       core.core.gl.canvas.onmousemove = function(e) {
         particle.x = e.clientX;
@@ -35,10 +38,8 @@ export class MyGame {
       };
 
       let sprite = new Sprite(core.gl, texture);
-      sprite.transform.position.x = core.core.gl.canvas.width/ 4;
+      sprite.transform.position.x = core.core.gl.canvas.width / 4;
       sprite.transform.position.y = core.core.gl.canvas.height / 4;
-      // sprite.transform.scale.x = 0.2;
-      // sprite.transform.scale.y = 0.5;
       core.stage.addChild(sprite);
       let sprite2 = new Sprite(core.gl, texture);
       sprite2.transform.position.x = 30;
@@ -57,13 +58,23 @@ export class MyGame {
 
       Ticker.SharedTicker.add((dt, msdt) => {
         sprite2.transform.rotation += 0.05;
-        // sprite.position.x += 1;
-        // sprite.position.y += 1;
-        // particle.x += 1;
-        // particle.y += 1;
-        // particle.update();
       });
 
+    });
+
+    Font.defaultFont(core.gl).once("load", () => {
+      let font = Font.defaultFont(core.gl);
+      let text = new Text(font, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toLowerCase());
+      text.transform.position.x = core.core.gl.canvas.width / 2;
+      text.transform.position.y = core.core.gl.canvas.height / 2;
+      text.transform.pivot.x = 0.5;
+      text.transform.pivot.y = 0.5;
+      text.transform.rotation = Math.PI;
+      text.scale.set(2, 2);
+      core.stage.addChild(text);
+      Ticker.SharedTicker.add(() => {
+        text.transform.rotation += 0.01;
+      });
     });
 
     let a = () => {
@@ -85,11 +96,11 @@ export class MyGame {
       });
 
     };
+
+
     core.core.gl.canvas.addEventListener("click", a);
 
-    
 
-    
     Ticker.SharedTicker.add((dt, msdt) => {
       core.update();
       // particle.update();

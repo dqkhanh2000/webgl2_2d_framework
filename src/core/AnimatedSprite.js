@@ -69,6 +69,10 @@ export class AnimatedSprite extends Sprite {
       }
     }
 
+    if (this.isCompleted) {
+      return;
+    }
+
     this.progress = Math.min(this._curTimeCount / this.config.duration, 1);
     this.currentIndex = Math.floor(this.progress * this.textures.length);
   }

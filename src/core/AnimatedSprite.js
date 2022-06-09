@@ -37,23 +37,18 @@ export class AnimatedSprite extends Sprite {
     this.isPlaying = this.config.autoPlay;
     this.isCompleted = false;
     this._curTimeCount = 0;
+    this.visible = this.config.autoPlay;
     Ticker.SharedTicker.add(this._update, this);
-
-    this.on("added", this._onAddedToParent, this);
   }
 
   play() {
     this.isPlaying = true;
-    if (this._parent) {
-      this._parent.addChild(this);
-    }
+    this.visible = true;
   }
 
   stop() {
     this.isPlaying = false;
-    if (this._parent) {
-      this._parent.removeChild(this);
-    }
+    this.visible = true;
   }
 
   reset() {
@@ -75,9 +70,6 @@ export class AnimatedSprite extends Sprite {
       else if (!this.isCompleted) {
         this.isCompleted = true;
         this.config.onComplete?.();
-        if (this._parent) {
-          this._parent.removeChild(this);
-        }
       }
     }
 
@@ -90,15 +82,8 @@ export class AnimatedSprite extends Sprite {
   }
 
   _render() {
-    if (this.isPlaying) {
+    if (this.isPlaying && !this.isCompleted && this.visible) {
       this.shader.activateShader(this.texture.texture, this.blendType);
-    }
-  }
-
-  _onAddedToParent(parent) {
-    this._parent = parent;
-    if (!this.isPlaying) {
-      this.parent.removeChild(this);
     }
   }
 

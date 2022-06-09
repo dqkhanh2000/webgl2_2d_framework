@@ -16,7 +16,7 @@ export class Ship extends AnimatedSprite {
     this.gl = gl;
     this.listEnemy = [];
 
-    this.transform.position.x = this.gl.canvas.width/2;
+    this.transform.position.x = this.gl.canvas.width / 2;
     this.transform.position.y = 800;
     this.transform.rotation = -Math.PI / 2;
     this.health = 3;
@@ -31,13 +31,14 @@ export class Ship extends AnimatedSprite {
       textures.push(TextureCache.get(`./dist/images/animation/explosion/${i}.png`));
     }
     this.explosion = new AnimatedSprite(this.gl, textures, {
-      duration : 0.5,
-      loop     : false,
-      autoPlay : false,
+      duration   : 0.5,
+      loop       : false,
+      autoPlay   : false,
+      onComplete : () => {
+        this.emit(ShipEvent.OnDead, this);
+      },
     });
     this.addChild(this.explosion);
-
-
   }
 
   setupGlow() {
@@ -82,6 +83,6 @@ export class Ship extends AnimatedSprite {
   }
 
   onDead() {
-    this.emit(ShipEvent.OnDead, this);
+    this.explosion.play();
   }
 }

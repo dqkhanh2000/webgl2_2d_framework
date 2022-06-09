@@ -1,4 +1,6 @@
+import { AnimatedSprite } from "../../src/core/AnimatedSprite";
 import { Sprite } from "../../src/core/Sprite";
+import { TextureCache } from "../../src/core/Texture";
 import Ticker from "../../src/system/ticker";
 
 export class Bullet extends Sprite {
@@ -7,12 +9,30 @@ export class Bullet extends Sprite {
     this.gl = gl;
     this.textureBullet = textureBullet;
     this.transform.rotation = -Math.PI / 2;
+    this.initExplosion();
   }
 
   setPosition(x, y) {
     this.transform.position.x = x;
     this.transform.position.y = y;
   }
+
+  initExplosion() {
+    let textures = [];
+    for (let i = 1; i <= 16; i++) {
+      textures.push(TextureCache.get(`./dist/images/animation/explosion/${i}.png`));
+    }
+    this.explosion = new AnimatedSprite(this.gl, textures, {
+      duration   : 0.5,
+      loop       : false,
+      autoPlay   : false,
+      onComplete : () => {
+        this.destroy();
+      },
+    });
+    this.addChild(this.explosion);
+  }
+
 
   updatePosition() {
     Ticker.SharedTicker.add((dt, msdt) => {
@@ -39,4 +59,10 @@ export class Bullet extends Sprite {
       }
     });
   }
+
+  onEnemyDead() {
+    this.explosion.play();
+    console.log("aa");
+  }
+
 }

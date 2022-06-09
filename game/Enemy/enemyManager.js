@@ -157,7 +157,7 @@ export class EnemyManager extends Container {
   spawnBulletEnemy() {
     this.delaySpawn = true;
     let textureBulletEnemy = TextureCache.get("./dist/images/enemy/bulletEnemy.png");
-    let bulletEnemy = new Sprite(this.gl, textureBulletEnemy);
+    let bulletEnemy = new Bullet(this.gl, textureBulletEnemy);
     bulletEnemy.type = "bullet";
     bulletEnemy.transform.scale.set(0.5, 0.5);
     this.listEnemy.push(bulletEnemy);
@@ -201,7 +201,6 @@ export class EnemyManager extends Container {
 
   removeEnemy(enemy) {
     if (!this.isRunTween) {
-      // this.removeChild(enemy);
       let index = this.listEnemy.indexOf(enemy);
       if (index >= 0) {
         this.listEnemy.splice(index, 1);
@@ -211,6 +210,7 @@ export class EnemyManager extends Container {
         else {
           try {
             enemy.onEnemyDead();
+            this.playSoundExplode();
           }
           catch (e) {}
         }

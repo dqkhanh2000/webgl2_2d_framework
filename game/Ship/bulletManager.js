@@ -1,6 +1,4 @@
 import Container from "../../src/core/Container";
-import { Sprite } from "../../src/core/Sprite";
-import Ticker from "../../src/system/ticker";
 import { Bullet } from "./bullet";
 
 export class BulletManager extends Container {
@@ -29,7 +27,7 @@ export class BulletManager extends Container {
       else if (this.checkLevel === 2) {
         let bullet = new Bullet(this.gl, this.textureBullet);
         this.addChild(bullet);
-        bullet.setPosition(this.posX - 10 + 20 * i, this.posY - 10 + 20 * i);
+        bullet.setPosition(this.posX - 10 + 20 * i, this.posY - 0.1 * i);
         this.listBullet.push(bullet);
       }
     }

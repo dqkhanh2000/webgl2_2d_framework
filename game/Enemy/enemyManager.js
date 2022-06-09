@@ -7,6 +7,8 @@ import { Enemy } from "./enemy";
 import Utils from "../Helpers/Utils";
 import { ShipEvent } from "../Ship/ship";
 import { Howl, Howler } from "howler";
+import { Boss } from "./boss";
+import { Bullet } from "../Ship/bullet";
 
 export const EnemyManagerEvent = Object.freeze({
   OnClearEnemy : "clear-enemy",
@@ -16,13 +18,20 @@ export class EnemyManager extends Container {
   constructor(gl, numEnemy, textureEnemy, player) {
     super();
     this.gl = gl;
-    this.textureEnemy = textureEnemy;
     this.numEnemy = numEnemy;
     this.listEnemy = [];
+    this.listBullet = [];
     this.player = player;
     this.delaySpawn = true;
+    this.attackSkill = true;
     this.isRunTween = true;
-    this.initEnemy();
+    if (textureEnemy !== null) {
+      this.textureEnemy = textureEnemy;
+      this.initEnemy();
+    }
+    else {
+      this.initBoss();
+    }
     this.update();
   }
 
@@ -80,6 +89,65 @@ export class EnemyManager extends Container {
     });
   }
 
+  initBoss() {
+    this.boss = new Boss(this.gl);
+    this.boss.type = "ship";
+    this.boss.setPosition(this.gl.canvas.width / 2, 0);
+    let posY = 0;
+    this.listEnemy.push(this.boss);
+    this.addChild(this.boss);
+    Ticker.SharedTicker.add((dt) => {
+      if (this.delaySpawn) {
+        this.delaySpawn = false;
+        setTimeout(() => {
+          this.spawnBulletBoss();
+        }, 500);
+      }
+    });
+    Tween.createTween(this.boss, { y: posY + 200 }, {
+      duration   : 1,
+      onComplete : () => {
+        this.isRunTween = false;
+        this.emit(EnemyManagerEvent.RunTweenDone, this);
+      },
+    }).start();
+    for (let i = 0; i < this.listEnemy.length; i++) {
+      let posX = this.listEnemy[i].transform.position.x + 700;
+      let enemy = this.listEnemy[i];
+      let tweenMove = Tween.createTween({ x: enemy.position.x - 700 }, { x: posX }, {
+        onUpdate: (data) => {
+          if (enemy && !this.enemy?._destroyed && enemy.transform) {
+            enemy.position.x = data.x;
+          }
+          else {
+            tweenMove.stop();
+          }
+        },
+        duration : 4,
+        loop     : true,
+        yoyo     : true,
+      });
+      tweenMove.start();
+    }
+    let tweenMove2 = Tween.createTween({ y: this.boss.position.y - 100 }, { y: 300 }, {
+      onUpdate: (data) => {
+        if (this.boss && !this.boss?._destroyed && this.boss.transform) {
+          this.boss.position.y = data.y;
+        }
+        else {
+          tweenMove2.stop();
+        }
+      },
+      duration   : 9,
+      loop       : true,
+      yoyo       : true,
+      onComplete : () => {
+        this.attackSkill = true;
+      },
+    });
+    tweenMove2.start();
+  }
+
   updatePosition(x, y) {
     this.transform.position.x = x;
     this.transform.position.y = y;
@@ -106,6 +174,27 @@ export class EnemyManager extends Container {
         }
       }
     });
+  }
+
+  spawnBulletBoss() {
+    let dy = Math.random() * 20;
+    let dx = Math.random() * 20;
+    this.delaySpawn = true;
+    let textureBulletEnemy = TextureCache.get("./dist/images/enemy/bulletEnemy.png");
+    for (let i = 0; i < 3; i++) {
+      let bullet;
+      bullet = new Bullet(this.gl, textureBulletEnemy);
+      bullet.transform.scale.set(0.5, 0.5);
+      bullet.type = "bullet";
+      this.addChild(bullet);
+      bullet.setPosition(this.boss.transform.position.x - 200 + 200 * i, this.boss.transform.position.y - 0.1 * i);
+      this.listBullet.push(bullet);
+      this.listEnemy.push(bullet);
+    }
+    this.listBullet.forEach((bullet) => {
+      bullet.updatePositionBoss();
+    });
+    this.listBullet = [];
   }
 
   removeEnemy(enemy) {

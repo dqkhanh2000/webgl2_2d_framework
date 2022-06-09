@@ -21,8 +21,9 @@ export class MyGame {
     this.delaySpawn = true;
     this.speed = 100;
     this.delayAttack = true;
-    this.checkLevel = 3;
+    this.checkLevel = 2;
     this.canShoot = false;
+    this.level = 1;
     this.load();
     Ticker.SharedTicker.add(() => {
       this.core.update();
@@ -31,12 +32,14 @@ export class MyGame {
 
   load() {
     Loader.addAnimationSprite("./dist/images/animation/ship/", 16);
+    Loader.addAnimationSprite("./dist/images/animation/boss/", 48);
     Loader.addAnimationSprite("./dist/images/animation/explosion/", 20);
     Loader.addSrc("./dist/images/sad.png");
     Loader.addSrc("./dist/images/glow.png");
     Loader.addSrc("./dist/images/bg_top.png");
     Loader.addSrc("./dist/images/bg_bottom.png");
     Loader.addSrc("./dist/images/redBullet.png");
+    Loader.addSrc("./dist/images/bullet_purple.png");
     Loader.addSrc("./dist/images/enemy/enemy_1.png");
     Loader.addSrc("./dist/images/enemy/bulletEnemy.png");
     Loader.addSrc("./dist/images/UI/gameOverLogo.png");
@@ -66,7 +69,12 @@ export class MyGame {
 
   playGame() {
     this.spawnShip();
-    this.spawnEnemy();
+    if (this.level === 1) {
+      this.spawnEnemy();
+    }
+    else {
+      this.spawnBoss();
+    }
     this.initBulletManager();
     this.initController();
     this.playBackgroundMusic();
@@ -103,9 +111,6 @@ export class MyGame {
         this.delayAttack = false;
       }
     });
-    // this.core.core.gl.canvas.addEventListener("click", (e) => {
-
-    // });
   }
 
   spawnShip() {
@@ -126,6 +131,16 @@ export class MyGame {
 
   }
 
+  spawnBoss() {
+    this.enemyManager = new EnemyManager(this.core.gl, this.numEnemy, null, this.ship);
+    this.core.stage.addChild(this.enemyManager);
+    this.enemyManager.on(EnemyManagerEvent.OnClearEnemy, this.win, this);
+    this.enemyManager.on(EnemyManagerEvent.RunTweenDone, () => {
+      this.canShoot = true;
+    }, this);
+
+  }
+
   spawnBullet(x, y) {
     this.bulletManager.updatePosition(x, y);
     this.bulletManager.spawnBullet();
@@ -133,7 +148,7 @@ export class MyGame {
 
   initBulletManager() {
     let shipEnemy = this.enemyManager.getEnemyShip();
-    let textureBullet = TextureCache.get("./dist/images/redBullet.png");
+    let textureBullet = TextureCache.get("./dist/images/bullet_purple.png");
     this.bulletManager = new BulletManager(this.core.gl, this.checkLevel, textureBullet, shipEnemy);
     this.core.stage.addChild(this.bulletManager);
 
@@ -141,12 +156,7 @@ export class MyGame {
   }
 
   defeat() {
-    var sound = new Howl({
-      src    : ["../assets/audio/sfx_explosion.mp3"],
-      volume : 0.5,
-    });
     this.music.stop();
-    sound.play();
     this.ship.destroy();
     this.enemyManager.destroy();
     this.canShoot = false;
@@ -159,6 +169,8 @@ export class MyGame {
     this.ship.destroy();
     this.enemyManager.destroy();
     this.canShoot = false;
+    this.level=2;
+    this.checkLevel = 3;
     this.gameUI.initWinUI();
     console.log("win");
   }

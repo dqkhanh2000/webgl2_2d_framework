@@ -1,6 +1,7 @@
 import { AnimatedSprite } from "../../src/core/AnimatedSprite";
 import Particle from "../../src/core/Particle";
 import { TextureCache } from "../../src/core/Texture";
+import { Howl, Howler } from "howler";
 
 export const ShipEvent = Object.freeze({
   TakeDamage : "take-damage",
@@ -84,5 +85,10 @@ export class Ship extends AnimatedSprite {
 
   onDead() {
     this.explosion.play();
+    var sound = new Howl({
+      src    : ["../assets/audio/sfx_explosion.mp3"],
+      volume : 0.5,
+    });
+    sound.play();
   }
 }

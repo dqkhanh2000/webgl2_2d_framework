@@ -4,16 +4,19 @@ import { TextureCache } from "../../src/core/Texture";
 import { Tween } from "../../src/core/tween";
 import Ticker from "../../src/system/ticker";
 import { Enemy } from "./enemy";
-
+import Utils from "../Helpers/Utils";
+import { ShipEvent } from "../Ship/ship";
 export class EnemyManager extends Container {
-  constructor(gl, numEnemy, textureEnemy) {
+  constructor(gl, numEnemy, textureEnemy, player) {
     super();
     this.gl = gl;
     this.textureEnemy = textureEnemy;
     this.numEnemy = numEnemy;
     this.listEnemy = [];
+    this.player = player;
     this.delaySpawn = true;
     this.initEnemy();
+    this.update();
   }
 
   initEnemy() {
@@ -28,7 +31,7 @@ export class EnemyManager extends Container {
       }
       this.listEnemy.push(enemy);
       this.addChild(enemy);
-      Ticker.SharedTicker.add((dt, msdt) => {
+      Ticker.SharedTicker.add(() => {
         if (enemy.transform.position.y < posY + 100) {
           enemy.updatePosition(5);
         }
@@ -69,13 +72,23 @@ export class EnemyManager extends Container {
     let enemyTaget = this.listEnemy[Math.floor(Math.random() * (this.listEnemy.length - 1))];
     bulletEnemy.transform.position.x = enemyTaget.transform.position.x;
     bulletEnemy.transform.position.y = enemyTaget.transform.position.y;
-    Ticker.SharedTicker.add((dt, msdt) => {
+    Ticker.SharedTicker.add((dt) => {
       if (!bulletEnemy._destroyed) {
         if (bulletEnemy.transform.position.y > 1000) {
           bulletEnemy.destroy();
         }
         else {
           bulletEnemy.transform.position.y += dt * 100;
+        }
+      }
+    });
+  }
+
+  update() {
+    Ticker.SharedTicker.add(() => {
+      for (let i = 0; i < this.listEnemy.length; i++) {
+        if (Utils.isCollision(this.player, this.listEnemy[i])) {
+          this.player.emit(ShipEvent.TakeDamage);
         }
       }
     });

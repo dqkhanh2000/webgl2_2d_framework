@@ -3,6 +3,7 @@ import Vector2 from "../math/vector2";
 import pool from "../system/pooling";
 import Container from "./Container";
 import Core from "./Core";
+import { Tween } from "./tween";
 
 export default class Engine2D {
 
@@ -19,6 +20,7 @@ export default class Engine2D {
      * @memberof Engine
     */
   init(canvas, autoResize = true) {
+    Tween.init();
     this.core.init(canvas);
     this.gl = this.core.gl;
     Engine2D.Core = this.core;

@@ -28,4 +28,10 @@ export default class Loader {
     }
   }
 
+  static addAnimationSprite(prefix, total, extName = "png") {
+    for (let i = 1; i <= total; i++) {
+      this.addSrc(`${prefix}${i}.${extName}`);
+    }
+  }
+
 }

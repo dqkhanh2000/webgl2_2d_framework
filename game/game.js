@@ -18,7 +18,7 @@ export class MyGame {
     this.core.resizeCanvasToDisplaySize();
     this.numEnemy = 17;
     this.delaySpawn = true;
-    this.speed = 70;
+    this.speed = 100;
     this.delayAttack = true;
     this.checkLevel = 3;
     this.canShoot = false;
@@ -62,38 +62,33 @@ export class MyGame {
 
   playBackgroundMusic() {
     this.music = new Howl({
-      src    : ["../assets/audio/music_bg.mp3"],
-      loop : true,
-      volume : 1,
+      src      : ["../assets/audio/music_bg.mp3"],
+      loop     : true,
+      volume   : 1,
       autoplay : true,
     });
   }
 
   initController() {
-    Ticker.SharedTicker.add((dt) => {
-      window.addEventListener("mousemove", (e) => {
-        this.ship.updatePosition(e.pageX, e.pageY);
-        if (this.delayAttack) {
-          setTimeout(() => {
-            if (this.canShoot) {
-              this.spawnBullet(e);
-            }
-            this.delayAttack = true;
-          }, this.speed);
-          this.delayAttack = false;
-        }
-      });
+
+    window.addEventListener("mousemove", (e) => {
+      this.ship.updatePosition(e.pageX, e.pageY);
     });
+    Ticker.SharedTicker.add((dt) => {
+      if (this.delayAttack) {
+        setTimeout(() => {
+          if (this.canShoot) {
+            this.spawnBullet(this.ship.transform.position.x, this.ship.transform.position.y);
+            this.sound = new Howl({
+              src    : ["../assets/audio/sfx_shoot.wav"],
+              volume : 0.5,
+            });
 
-    this.core.core.gl.canvas.addEventListener("click", (e) => {
-      if (this.canShoot) {
-        this.spawnBullet(e);
-        this.sound = new Howl({
-          src    : ["../assets/audio/sfx_shoot.wav"],
-          volume : 0.5,
-        });
-
-        this.sound.play();
+            this.sound.play();
+          }
+          this.delayAttack = true;
+        }, this.speed);
+        this.delayAttack = false;
       }
     });
     // this.core.core.gl.canvas.addEventListener("click", (e) => {
@@ -119,8 +114,8 @@ export class MyGame {
 
   }
 
-  spawnBullet(e) {
-    this.bulletManager.updatePosition(e.pageX, e.pageY);
+  spawnBullet(x, y) {
+    this.bulletManager.updatePosition(x, y);
     this.bulletManager.spawnBullet();
   }
 

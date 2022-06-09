@@ -9,14 +9,16 @@ in vec2 i_Velocity;
 in vec2 i_Coord;
 in vec2 i_TexCoord;
 
+uniform float u_StartScale;
+uniform float u_EndScale;
+
 out float v_Age;
 out float v_Life;
 out vec2 v_TexCoord;
 
 void main() {
-  float scale = 0.2; /* the quad is 1.0x1.0, we scale it appropriately */
   vec2 vert_coord = i_Position +
-					(scale*(1.0-i_Age / i_Life) + 0.25) * 0.1 * i_Coord +
+					(u_StartScale*(1.0-i_Age / i_Life) + u_EndScale) * 0.1 * i_Coord +
 					i_Velocity * 0.0;
   v_Age = i_Age;
   v_Life = i_Life;

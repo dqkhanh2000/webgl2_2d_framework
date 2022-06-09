@@ -4,6 +4,7 @@ import vertexShaderUpdateSrc from "./shader/particle/particleUpdate.vert";
 import fragmentShaderUpdateSrc from "./shader/particle/particleUpdate.frag";
 import vertexShaderRenderSrc from "./shader/particle/particleRender.vert";
 import fragmentShaderRenderSrc from "./shader/particle/particleRender.frag";
+import { ParticleConfig } from "../core/Particle";
 
 
 export default class ParticleShader extends SimpleShader {
@@ -258,7 +259,7 @@ export default class ParticleShader extends SimpleShader {
 
     /* Populate buffers with some initial data. */
     this.initialData
-            = new Float32Array(this._initialParticleData(state.numParticles, state.minAge, state.maxAge));
+            = new Float32Array(this._initialParticleData(state.numParticles, state.minLifeRange, state.maxLifeRange));
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers[0]);
     this.gl.bufferData(this.gl.ARRAY_BUFFER, this.initialData, this.gl.STREAM_DRAW);
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers[1]);
@@ -297,6 +298,10 @@ export default class ParticleShader extends SimpleShader {
     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
   }
 
+  /**
+   * @param {number} dt - time delta
+   * @param {ParticleConfig} state - particle configuration
+   */
   renderParticle(dt, state) {
     var numPart = state.bornParticles;
     /* Here's where birth rate parameter comes into play.
@@ -339,8 +344,8 @@ export default class ParticleShader extends SimpleShader {
     );
     this.gl.uniform2f(
       this.gl.getUniformLocation(this.updateProgram, "u_Origin"),
-      state.origin[0],
-      state.origin[1],
+      state.x,
+      state.y,
     );
     this.gl.uniform1f(
       this.gl.getUniformLocation(this.updateProgram, "u_MinTheta"),
@@ -358,6 +363,7 @@ export default class ParticleShader extends SimpleShader {
       this.gl.getUniformLocation(this.updateProgram, "u_MaxSpeed"),
       state.maxSpeed,
     );
+
     state.totalTime += dt;
     this.gl.activeTexture(this.gl.TEXTURE0);
     this.gl.bindTexture(this.gl.TEXTURE_2D, this.rangeNoiseTexture);
@@ -392,7 +398,19 @@ export default class ParticleShader extends SimpleShader {
             drawing the data from the "read" buffer, not the "write" buffer
             that we've written the updated data to. */
     this.gl.bindVertexArray(this.vaos[state.read + 2]);
+
     this.gl.useProgram(this.renderProgram);
+
+    this.gl.uniform1f(
+      this.gl.getUniformLocation(this.renderProgram, "u_StartScale"),
+      state.startScale,
+    );
+
+    this.gl.uniform1f(
+      this.gl.getUniformLocation(this.renderProgram, "u_EndScale"),
+      state.endScale,
+    );
+
     this.gl.enable(this.gl.BLEND);
     this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
     this.gl.activeTexture(this.gl.TEXTURE0);

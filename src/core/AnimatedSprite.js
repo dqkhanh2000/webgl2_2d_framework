@@ -36,7 +36,7 @@ export class AnimatedSprite extends Sprite {
     this.isPlaying = this.config.autoPlay;
     this.isCompleted = false;
     this._curTimeCount = 0;
-    Ticker.SharedTicker.on("tick", this._update, this);
+    Ticker.SharedTicker.add(this._update, this);
   }
 
   play() {
@@ -83,6 +83,9 @@ export class AnimatedSprite extends Sprite {
 
   set currentIndex(value) {
     this._curIndex = value;
+    if (this.currentIndex >= this.textures.length) {
+      this.currentIndex = 0;
+    }
     this.texture = this.textures[this._curIndex];
   }
 }

@@ -2,24 +2,48 @@ import Container from "./Container";
 import Ticker from "../system/ticker";
 import ParticleShader from "../renderers/ParticleShader";
 
+export class ParticleConfig {
+  static default = {
+    x            : 0,
+    y            : 0,
+    numParticles : 11,
+    birthRate    : 1,
+    minLifeRange : 0.5,
+    maxLifeRange : 0.5,
+    minTheta     : 0,
+    maxTheta     : 0,
+    minSpeed     : 0,
+    maxSpeed     : 0,
+    startScale   : 1,
+    endScale     : 0,
+    gravity      : [0, 1],
+  };
+
+  constructor() {
+    let defaultConfig = ParticleConfig.default;
+    this.x = defaultConfig.x;
+    this.y = defaultConfig.y;
+    this.numParticles = defaultConfig.numParticles;
+    this.birthRate = defaultConfig.birthRate;
+    this.minLifeRange = defaultConfig.minLifeRange;
+    this.maxLifeRange = defaultConfig.maxLifeRange;
+    this.minTheta = defaultConfig.minTheta;
+    this.maxTheta = defaultConfig.maxTheta;
+    this.minSpeed = defaultConfig.minSpeed;
+    this.maxSpeed = defaultConfig.maxSpeed;
+    this.startScale = defaultConfig.startScale;
+    this.endScale = defaultConfig.endScale;
+    this.gravity = defaultConfig.gravity;
+  }
+}
 export default class Particle extends Container {
 
   // eslint-disable-next-line max-params
-  constructor(texture, x, y, numParticles, birthRate, minLifeRange, maxLifeRange, minTheta, maxTheta, minSpeed, maxSpeed, gravity) {
+  constructor(texture, config = ParticleConfig.default) {
     super();
     this.texture = texture;
-    this.numParticles = numParticles;
-    this.birthRate = birthRate;
-    this.minLifeRange = minLifeRange;
-    this.maxLifeRange = maxLifeRange;
-    this.minTheta = minTheta;
-    this.maxTheta = maxTheta;
-    this.minSpeed = minSpeed;
-    this.maxSpeed = maxSpeed;
-    this.gravity = gravity;
+    this.config = config;
     this.canPlay = false;
-    this._x = x;
-    this._y = y;
   }
 
   _initBeforeFirstRender() {
@@ -36,17 +60,7 @@ export default class Particle extends Container {
         throw "Invalid min-max speed range.";
       }
       this.convertPositionToClipSpace();
-      this.state = {};
-      this.state.numParticles = this.numParticles;
-      this.state.birthRate = this.birthRate;
-      this.state.minAge = this.minLifeRange;
-      this.state.maxAge = this.maxLifeRange;
-      this.state.minTheta = this.minTheta;
-      this.state.maxTheta = this.maxTheta;
-      this.state.minSpeed = this.minSpeed;
-      this.state.maxSpeed = this.maxSpeed;
-      this.state.gravity = this.gravity;
-      this.state.origin = [this.particleX, this.particleY];
+      this.state = this.config;
       this.state.pause = false;
 
       this.state.bornParticles = 0;
@@ -54,6 +68,7 @@ export default class Particle extends Container {
       this.state.write = 1;
       this.state.oldTimestamp = 0.0;
       this.state.totalTime = 0.0;
+
       this.shader = new ParticleShader(this.gl);
       this.shader.texture = this.texture;
       this.shader.init(this.state);
@@ -79,9 +94,9 @@ export default class Particle extends Container {
   convertPositionToClipSpace() {
     this.particleX = (this.x / this.gl.canvas.width) * 2 - 1;
     this.particleY = -((this.y / this.gl.canvas.height) * 2 - 1);
-    if (this.state && this.state.origin) {
-      this.state.origin[0] = this.particleX;
-      this.state.origin[1] = this.particleY;
+    if (this.state) {
+      this.state.x = this.particleX;
+      this.state.y = this.particleY;
     }
   }
 

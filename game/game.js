@@ -5,6 +5,7 @@ import Loader from "../src/core/Loader";
 import { Ship, ShipEvent } from "./Ship/ship";
 import { EnemyManager, EnemyManagerEvent } from "./Enemy/enemyManager";
 import { BulletEvent, BulletManager } from "./Ship/bulletManager";
+import { Howl, Howler } from "howler";
 import { Sprite } from "../src/core/Sprite";
 import { Tween } from "../src/core/tween";
 import { GameUI } from "./gameUI";
@@ -56,6 +57,16 @@ export class MyGame {
     this.spawnEnemy();
     this.initBulletManager();
     this.initController();
+    this.playBackgroundMusic();
+  }
+
+  playBackgroundMusic() {
+    var sound = new Howl({
+      src    : ["../assets/audio/music_bg.mp3"],
+      loop : true,
+      volume : 1,
+      autoplay : true,
+    });
   }
 
   initController() {
@@ -72,7 +83,18 @@ export class MyGame {
           this.delayAttack = false;
         }
       });
+    });
 
+    this.core.core.gl.canvas.addEventListener("click", (e) => {
+      if (this.canShoot) {
+        this.spawnBullet(e);
+        var sound = new Howl({
+          src    : ["../assets/audio/sfx_shoot.wav"],
+          volume : 0.5,
+        });
+
+        sound.play();
+      }
     });
     // this.core.core.gl.canvas.addEventListener("click", (e) => {
 
@@ -112,6 +134,12 @@ export class MyGame {
   }
 
   defeat() {
+    var sound = new Howl({
+      src    : ["../assets/audio/sfx_explosion.mp3"],
+      volume : 0.5,
+    });
+
+    sound.play();
     this.ship.destroy();
     this.enemyManager.destroy();
     this.canShoot = false;

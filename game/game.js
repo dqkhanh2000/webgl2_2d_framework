@@ -61,7 +61,7 @@ export class MyGame {
   }
 
   playBackgroundMusic() {
-    var sound = new Howl({
+    this.music = new Howl({
       src    : ["../assets/audio/music_bg.mp3"],
       loop : true,
       volume : 1,
@@ -88,12 +88,12 @@ export class MyGame {
     this.core.core.gl.canvas.addEventListener("click", (e) => {
       if (this.canShoot) {
         this.spawnBullet(e);
-        var sound = new Howl({
+        this.sound = new Howl({
           src    : ["../assets/audio/sfx_shoot.wav"],
           volume : 0.5,
         });
 
-        sound.play();
+        this.sound.play();
       }
     });
     // this.core.core.gl.canvas.addEventListener("click", (e) => {
@@ -138,7 +138,7 @@ export class MyGame {
       src    : ["../assets/audio/sfx_explosion.mp3"],
       volume : 0.5,
     });
-
+    this.music.stop();
     sound.play();
     this.ship.destroy();
     this.enemyManager.destroy();
@@ -148,6 +148,7 @@ export class MyGame {
   }
 
   win() {
+    this.music.stop();
     this.ship.destroy();
     this.enemyManager.destroy();
     this.canShoot = false;

@@ -34,6 +34,7 @@ export class MyGame {
     Loader.addSrc("./dist/images/sad.png");
     Loader.addSrc("./dist/images/glow.png");
     Loader.addSrc("./dist/images/redBullet.png");
+    Loader.addSrc("./dist/images/bullet_purple.png");
     Loader.addSrc("./dist/images/enemy/enemy_1.png");
     Loader.addSrc("./dist/images/enemy/bulletEnemy.png");
     Loader.addSrc("./dist/images/UI/gameOverLogo.png");
@@ -90,9 +91,6 @@ export class MyGame {
         this.delayAttack = false;
       }
     });
-    // this.core.core.gl.canvas.addEventListener("click", (e) => {
-
-    // });
   }
 
   spawnShip() {
@@ -120,7 +118,7 @@ export class MyGame {
 
   initBulletManager() {
     let shipEnemy = this.enemyManager.getEnemyShip();
-    let textureBullet = TextureCache.get("./dist/images/redBullet.png");
+    let textureBullet = TextureCache.get("./dist/images/bullet_purple.png");
     this.bulletManager = new BulletManager(this.core.gl, this.checkLevel, textureBullet, shipEnemy);
     this.core.stage.addChild(this.bulletManager);
 

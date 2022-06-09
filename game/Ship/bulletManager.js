@@ -56,6 +56,8 @@ export class BulletManager extends Container {
         bullet.setPosition(this.posX - 10 + 20 * i, this.posY - 0.1 * i);
         this.listBullet.push(bullet);
       }
+      bullet.transform.width = 25;
+      bullet.transform.height = 60;
       this.bulletChecker.push(bullet);
     }
     this.listBullet.forEach((bullet) => {

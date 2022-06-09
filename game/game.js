@@ -6,6 +6,8 @@ import Loader from "../src/core/Loader";
 import { Ship, ShipEvent } from "./Ship/ship";
 import { EnemyManager, EnemyManagerEvent } from "./Enemy/enemyManager";
 import { BulletEvent, BulletManager } from "./Ship/bulletManager";
+import { Sprite } from "../src/core/Sprite";
+import { Tween } from "../src/core/tween";
 
 
 export class MyGame {
@@ -23,28 +25,60 @@ export class MyGame {
   }
 
   load() {
-    Loader.addSrc("./dist/images/ship/ship_1.png");
-    Loader.addSrc("./dist/images/ship/ship_2.png");
-    Loader.addSrc("./dist/images/ship/ship_3.png");
-    Loader.addSrc("./dist/images/ship/ship_4.png");
-    Loader.addSrc("./dist/images/ship/ship_5.png");
-    Loader.addSrc("./dist/images/ship/ship_6.png");
-    Loader.addSrc("./dist/images/ship/ship_7.png");
-    Loader.addSrc("./dist/images/ship/ship_8.png");
-    Loader.addSrc("./dist/images/ship/ship_9.png");
-    Loader.addSrc("./dist/images/ship/ship_10.png");
-    Loader.addSrc("./dist/images/ship/ship_11.png");
-    Loader.addSrc("./dist/images/ship/ship_12.png");
-    Loader.addSrc("./dist/images/ship/ship_13.png");
-    Loader.addSrc("./dist/images/ship/ship_14.png");
-    Loader.addSrc("./dist/images/ship/ship_15.png");
-    Loader.addSrc("./dist/images/ship/ship_16.png");
+    for (let i = 1; i <= 16; i++) {
+      Loader.addSrc(`./dist/images/ship/ship_${i}.png`);
+    }
     Loader.addSrc("./dist/images/sad.png");
     Loader.addSrc("./dist/images/glow.png");
     Loader.addSrc("./dist/images/redBullet.png");
     Loader.addSrc("./dist/images/enemy/enemy_1.png");
     Loader.addSrc("./dist/images/enemy/bulletEnemy.png");
-    Loader.load(this.core.gl, this.playGame, this);
+    Loader.addSrc("./dist/images/UI/gameOverLogo.png");
+    Loader.addSrc("./dist/images/UI/buttonStart.png");
+    Loader.addSrc("./dist/images/UI/buttonNext.png");
+    Loader.addSrc("./dist/images/UI/levelComplete.png");
+    Loader.addSrc("./dist/images/UI/logo.png");
+    Loader.load(this.core.gl, this.initUI, this);
+  }
+
+  initUI() {
+    let texturebgUI = TextureCache.get("./dist/images/UI/logo.png");
+    let bgUI = new Sprite(this.core.gl, texturebgUI);
+    bgUI.transform.position.x = this.core.core.gl.canvas.width / 2;
+    bgUI.transform.position.y = this.core.core.gl.canvas.height / 2 - 200;
+    bgUI.transform.scale.set(1, 1);
+    this.core.stage.addChild(bgUI);
+
+    let textureButtonStart = TextureCache.get("./dist/images/UI/buttonStart.png");
+    let buttonStart = new Sprite(this.core.gl, textureButtonStart);
+    buttonStart.transform.position.x = this.core.core.gl.canvas.width / 2;
+    buttonStart.transform.position.y = this.core.core.gl.canvas.height / 2 + 50;
+    buttonStart.transform.scale.set(1.5, 1.5);
+
+    this.core.stage.addChild(buttonStart);
+    window.addEventListener("mousedown", (e) => {
+      if (!buttonStart._destroyed) {
+        if (e.pageX >= buttonStart.transform.position.x - buttonStart.transform.width / 2
+        && e.pageX < buttonStart.transform.position.x + buttonStart.transform.width / 2) {
+          if (e.pageY >= buttonStart.transform.position.y - buttonStart.transform.height / 2
+          && e.pageY < buttonStart.transform.position.y + buttonStart.transform.height / 2) {
+            let tweenRotate = Tween.createTween({ x: 1.5 }, { x: 1 }, {
+              duration : 0.2,
+              yoyo     : true,
+              repeat   : 1,
+              onUpdate : (data) => {
+                buttonStart.transform.scale.set(data.x, data.x);
+              },
+              onComplete: () => {
+                this.playGame();
+                bgUI.destroy();
+                buttonStart.destroy();
+              },
+            }).start();
+          }
+        }
+      }
+    });
   }
 
   playGame() {

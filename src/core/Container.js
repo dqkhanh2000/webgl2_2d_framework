@@ -12,7 +12,7 @@ export default class Container extends EventEmitter {
     this.visible = true;
     this.renderable = true;
 
-    this.parent = null;
+    this._parent = null;
     this.worldAlpha = 1;
 
     this._lastSortedIndex = 0;
@@ -51,7 +51,7 @@ export default class Container extends EventEmitter {
     }
 
     if (this.transform.isDirty) {
-      this.transform.updateTransform(this.parent?.transform);
+      this.transform.updateTransform(this.parent?.transform, this.parent?.globalPosition);
     }
     // multiply the alphas..
     this.worldAlpha = this.alpha * (this.parent?.worldAlpha || 1);
@@ -442,6 +442,32 @@ export default class Container extends EventEmitter {
 
   set zIndex(value) {
     this._zIndex = value;
+  }
+
+  get globalPosition() {
+    return this.transform.globalPosition;
+  }
+
+  get globalScale() {
+    return this.transform.globalScale;
+  }
+
+  get globalRotation() {
+    return this.transform.globalRotation;
+  }
+
+  get parent() {
+    return this._parent;
+  }
+
+  set parent(value) {
+    if (value === this._parent) {
+      return;
+    }
+
+    this._parent = value;
+    this.transform.parent = value ? value.transform : null;
+
   }
 }
 

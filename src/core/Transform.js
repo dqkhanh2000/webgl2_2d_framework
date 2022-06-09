@@ -32,6 +32,8 @@ export default class Transform {
 
     this.isDirty = true;
 
+    this.parent = null;
+
   }
 
   onChange() {
@@ -67,6 +69,7 @@ export default class Transform {
      * Updates the local and the world transformation matrices.
      *
      * @param {Transform} parentTransform - The parent transform
+     * @param {Vector2} parentGlobalPosition - The parent global position
      */
   updateTransform(parentTransform) {
     const lt = this.localTransform;
@@ -76,14 +79,14 @@ export default class Transform {
       let wt = this.worldTransform;
       wt.copyFrom(this._originWorldTransform);
 
-      wt.translate(parentTransform.pivot.x, parentTransform.pivot.y);
-      wt.translate(parentTransform.position.x, parentTransform.position.y);
-      wt.rotate(parentTransform.rotation);
-      wt.scale(parentTransform.scale.x, parentTransform.scale.y);
-      wt.translate(-parentTransform.pivot.x, -parentTransform.pivot.y);
+      // wt.translate(this.parent.globalPivot.x, this.parent.globalPivot.y);
+      wt.translate(this.parent.globalPosition);
+      wt.rotate(this.parent.globalRotation);
+      wt.scale(this.parent.globalScale.x, this.parent.globalScale.y);
+      // wt.translate(-this.parent.globalPivot.x, -this.parent.globalPivot.y);
 
-      wt.translate(this.pivot.x, this.pivot.y);
-      wt.translate(this.position.x, this.position.y);
+      wt.translate(this.pivot);
+      wt.translate(this.position);
       wt.rotate(this._rotation);
       wt.scale((this._width || 1) * this.scale.x, (this._height || 1) * this.scale.y);
       wt.translate(-this.pivot.x, -this.pivot.y);
@@ -146,6 +149,51 @@ export default class Transform {
         this.isTexture = true;
         this.pivot.set(0.5, 0.5);
       }
+    }
+  }
+
+  get globalPosition() {
+    if (this.parent) {
+      return this.parent.globalPosition.add(this.position);
+    }
+    else {
+      return this.position.clone();
+    }
+  }
+
+  get globalScale() {
+    if (this.parent) {
+      return this.parent.globalScale.multiply(this.scale);
+    }
+    else {
+      return this.scale.clone();
+    }
+  }
+
+  get globalRotation() {
+    if (this.parent) {
+      return this.parent.globalRotation + this.rotation;
+    }
+    else {
+      return this.rotation;
+    }
+  }
+
+  get globalAlpha() {
+    if (this.parent) {
+      return this.parent.globalAlpha * this.alpha;
+    }
+    else {
+      return this.alpha;
+    }
+  }
+
+  get globalPivot() {
+    if (this.parent) {
+      return this.parent.globalPivot.add(this.pivot);
+    }
+    else {
+      return this.pivot.clone();
     }
   }
 }

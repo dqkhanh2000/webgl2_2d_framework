@@ -222,6 +222,13 @@ export default class Matrix2d {
     );
   }
 
+  multiplyVector2(vec) {
+    let out = new Vector2();
+    out.x = this.array[0] * vec.x + this.array[1] * vec.y + this.array[2];
+    out.y = this.array[3] * vec.x + this.array[4] * vec.y + this.array[5];
+    return out;
+  }
+
   /**
      * Clone the Matrix
      * @name clone

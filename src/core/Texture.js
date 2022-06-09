@@ -43,8 +43,11 @@ export default class Texture extends EventEmitter {
   }
 
   static FromURL(gl, url) {
-    let texture = new Texture(gl, url);
-    TextureCache.add(url, texture);
+    let texture = TextureCache.get(url);
+    if (!texture) {
+      texture = new Texture(gl, url);
+      TextureCache.add(url, texture);
+    }
     return texture;
   }
 

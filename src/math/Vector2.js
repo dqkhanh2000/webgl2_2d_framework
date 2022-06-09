@@ -491,6 +491,22 @@ class Vector2 {
     return this.scale(this.dot(v));
   }
 
+  multiply(...args) {
+    var _x;
+    var _y;
+    if (args.length === 2) {
+      // x, y
+      _x = args[0];
+      _y = args[1];
+    }
+    else {
+      // vector
+      _x = args[0].x;
+      _y = args[0].y;
+    }
+    return this._set(this.x * _x, this.y * _y);
+  }
+
   /**
      * return a clone copy of this vector
      * @name clone
@@ -499,7 +515,10 @@ class Vector2 {
      * @returns {Vector2} new me.Vector2d
      */
   clone() {
-    return pool.pull("Vector2d", this.x, this.y);
+    let vec = pool.pull("Vector2", this.x, this.y);
+    vec.x = this.x;
+    vec.y = this.y;
+    return vec;
   }
 
   /**

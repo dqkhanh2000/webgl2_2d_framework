@@ -1,4 +1,6 @@
 import Color from "../math/Color";
+import Vector2 from "../math/vector2";
+import pool from "../system/pooling";
 import Container from "./Container";
 import Core from "./Core";
 
@@ -25,6 +27,10 @@ export default class Engine2D {
     if (autoResize) {
       this.setAutoResize();
     }
+
+    pool.register("Container", Container);
+    pool.register("Vector2", Vector2);
+
   }
 
   update() {

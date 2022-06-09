@@ -1,14 +1,12 @@
 import { TextureCache } from "../src/core/Texture";
-import { Sprite } from "../src/core/Sprite";
 import Ticker from "../src/system/ticker";
 import Engine2D from "../src/core/Engine";
 import Particle from "../src/renderers/Particle";
 import Loader from "../src/core/Loader";
-import Container from "../src/core/Container";
-import { Tween } from "../src/core/tween";
-import { Ship } from "./Ship/ship";
+import { Ship, ShipEvent } from "./Ship/ship";
 import { EnemyManager } from "./Enemy/enemyManager";
 import { BulletManager } from "./Ship/bulletManager";
+
 
 export class MyGame {
   constructor() {
@@ -21,7 +19,7 @@ export class MyGame {
     this.load();
     this.particle = new Particle(0, 0.5, 1000, 0.1, 0.5, 1, -Math.PI, Math.PI, 0.5, 1, [0.0, -0.8]);
     this.core.stage.addChild(this.particle);
-    Ticker.SharedTicker.add((dt, msdt) => {
+    Ticker.SharedTicker.add(() => {
       this.core.update();
     });
   }
@@ -54,6 +52,7 @@ export class MyGame {
   spawnShip() {
     let textureShip = TextureCache.get("./dist/images/ship/ship_9.png");
     this.ship = new Ship(this.core.gl, textureShip);
+    this.ship.on(ShipEvent.TakeDamage, this.ship.takeDamage, this.ship);
 
     let textureBullet = TextureCache.get("./dist/images/redBullet.png");
     this.bulletManager = new BulletManager(this.core.gl, this.checkLevel, textureBullet);
@@ -63,7 +62,7 @@ export class MyGame {
 
   spawnEnemy() {
     let textureEnemy = TextureCache.get("./dist/images/enemy/enemy_1.png");
-    this.enemyManager = new EnemyManager(this.core.gl, this.numEnemy, textureEnemy);
+    this.enemyManager = new EnemyManager(this.core.gl, this.numEnemy, textureEnemy, this.ship);
     this.core.stage.addChild(this.enemyManager);
 
   }

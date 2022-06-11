@@ -24,7 +24,7 @@ export class Sprite extends Container {
   }
 
   _render(renderer) {
-    this.shader.activateShader(this.texture.texture, this.blendType);
+    this.shader.activateShader(this.texture.texture, this.blendType, this.transform.globalAlpha);
   }
 
   updateTransform() {

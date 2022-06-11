@@ -40,6 +40,7 @@ export default class TextureShader extends SimpleShader {
 
     this.texcoordAttributeLocation = this.gl.getAttribLocation(this.program, "a_texcoord");
     this.textureLocation = this.gl.getUniformLocation(this.program, "u_texture");
+    this.alphaLocation = this.gl.getUniformLocation(this.program, "u_alpha");
 
     this.vao = this.gl.createVertexArray();
     this.gl.bindVertexArray(this.vao);
@@ -70,7 +71,7 @@ export default class TextureShader extends SimpleShader {
   /**
    * @param {WebGLTexture} texture - The texture to render.
    */
-  activateShader(texture, blendType = Texture.BLEND_TYPE.NORMAL) {
+  activateShader(texture, blendType = Texture.BLEND_TYPE.NORMAL, alpha = 1) {
     this.gl.enable(this.gl.BLEND);
     if (blendType === Texture.BLEND_TYPE.NORMAL) {
       this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
@@ -83,6 +84,8 @@ export default class TextureShader extends SimpleShader {
     }
     this.gl.useProgram(this.program);
     this.gl.bindVertexArray(this.vao);
+
+    this.gl.uniform1f(this.alphaLocation, alpha);
 
     this.gl.uniform1i(this.textureLocation, 0);
     this.gl.activeTexture(this.gl.TEXTURE0 + 0);

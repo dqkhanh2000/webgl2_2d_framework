@@ -14,9 +14,9 @@ export default class Background extends Container {
   }
 
   _init() {
-    this.bgTop = this._createBackground("./dist/images/bg_top.png");
+    this.bgTop = this._createBackground("/assets/images/bg_top.png");
     this.bgTop.pivot.y = 1;
-    this.bgBottom = this._createBackground("./dist/images/bg_bottom.png");
+    this.bgBottom = this._createBackground("/assets/images/bg_bottom.png");
     this.bgBottom.pivot.y = 1;
 
     this.bgBottom.position.y = this.bgTop.position.y + this.bgTop.texture.height * this.bgTop.scale.y - 1;

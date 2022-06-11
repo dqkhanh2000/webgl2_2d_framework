@@ -156,7 +156,7 @@ export class EnemyManager extends Container {
 
   spawnBulletEnemy() {
     this.delaySpawn = true;
-    let textureBulletEnemy = TextureCache.get("./dist/images/enemy/bulletEnemy.png");
+    let textureBulletEnemy = TextureCache.get("/assets/images/enemy/bulletEnemy.png");
     let bulletEnemy = new Bullet(this.gl, textureBulletEnemy);
     bulletEnemy.type = "bullet";
     bulletEnemy.transform.scale.set(0.5, 0.5);
@@ -168,7 +168,7 @@ export class EnemyManager extends Container {
     Ticker.SharedTicker.add((dt) => {
       if (!bulletEnemy._destroyed) {
         if (bulletEnemy.transform.position.y > 1000) {
-          this.removeEnemy(bulletEnemy);
+          this.removeEnemy(bulletEnemy, false);
         }
         else {
           bulletEnemy.transform.position.y += dt * 100;
@@ -181,7 +181,7 @@ export class EnemyManager extends Container {
     let dy = Math.random() * 20;
     let dx = Math.random() * 20;
     this.delaySpawn = true;
-    let textureBulletEnemy = TextureCache.get("./dist/images/bullet_enemy.png");
+    let textureBulletEnemy = TextureCache.get("/assets/images/bullet_enemy.png");
     for (let i = 0; i < 3; i++) {
       let bullet;
       bullet = new Bullet(this.gl, textureBulletEnemy);
@@ -199,20 +199,19 @@ export class EnemyManager extends Container {
     this.listBullet = [];
   }
 
-  removeEnemy(enemy) {
+  removeEnemy(enemy, sound = true) {
     if (!this.isRunTween) {
       let index = this.listEnemy.indexOf(enemy);
       if (index >= 0) {
         this.listEnemy.splice(index, 1);
-        if (enemy.type === "ship") {
+        if (enemy.type === "ship" && sound) {
           this.playSoundExplode();
         }
         else {
-          try {
-            enemy.onEnemyDead();
+          enemy.onEnemyDead();
+          if (sound) {
             this.playSoundExplode();
           }
-          catch (e) {}
         }
       }
     }
@@ -224,7 +223,7 @@ export class EnemyManager extends Container {
 
   playSoundExplode() {
     var sound = new Howl({
-      src    : ["../../assets/audio/sfx_enemy_explode.mp3"],
+      src    : ["/assets/audio/sfx_enemy_explode.mp3"],
       volume : 0.5,
     });
 

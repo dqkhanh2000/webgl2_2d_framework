@@ -1,4 +1,4 @@
-var roboto_bold_font = {
+const roboto_bold_font = {
 ix: 0.009766 ,
 iy: 0.009766 ,
 aspect: 1.000000 ,
@@ -769,3 +769,5 @@ chars:{
 kern:{}
 
 }
+
+export default roboto_bold_font;

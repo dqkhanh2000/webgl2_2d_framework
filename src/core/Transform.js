@@ -30,6 +30,7 @@ export default class Transform {
     this._height = 0;
     this._wPivot = 0;
     this._hPivot = 0;
+    this.alpha = 1;
 
     this.isDirty = true;
 

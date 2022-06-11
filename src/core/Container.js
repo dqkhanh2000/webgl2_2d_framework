@@ -8,7 +8,7 @@ export default class Container extends EventEmitter {
   constructor() {
     super();
     this.transform = new Transform();
-    this.alpha = 1;
+    this._alpha = 1;
     this.visible = true;
     this.renderable = true;
 
@@ -390,6 +390,15 @@ export default class Container extends EventEmitter {
 
   set y(value) {
     this.transform.position.y = value;
+  }
+
+  get alpha() {
+    return this._alpha;
+  }
+
+  set alpha(value) {
+    this._alpha = value;
+    this.transform.alpha = value;
   }
 
   get worldTransform() {

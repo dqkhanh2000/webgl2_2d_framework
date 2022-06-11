@@ -12,7 +12,6 @@ export default class TextShader extends TextureShader {
     this.font = font;
     this._initShaderProgram(textProgramVert, texProgramFrag);
     this._initShaderAttributes();
-    this.makeVerticesForString(this.font.info, "a");
   }
 
   makeVerticesForString(fontInfo, s) {
@@ -85,7 +84,7 @@ export default class TextShader extends TextureShader {
     };
   }
 
-  activateShader(text) {
+  activateShader(text, alpha) {
     this.gl.useProgram(this.program);
     this.gl.bindVertexArray(this.vao);
 
@@ -95,6 +94,8 @@ export default class TextShader extends TextureShader {
     this.gl.bufferData(this.gl.ARRAY_BUFFER, vertices.arrays.position, this.gl.DYNAMIC_DRAW);
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.texcoordBuffer);
     this.gl.bufferData(this.gl.ARRAY_BUFFER, vertices.arrays.texcoord, this.gl.DYNAMIC_DRAW);
+
+    this.gl.uniform1f(this.alphaLocation, alpha);
 
     this.gl.uniform1i(this.textureLocation, 0);
     this.gl.activeTexture(this.gl.TEXTURE0 + 0);

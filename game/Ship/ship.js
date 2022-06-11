@@ -3,6 +3,7 @@ import Particle from "../../src/core/Particle";
 import { TextureCache } from "../../src/core/Texture";
 import { Howl, Howler } from "howler";
 import { Sprite } from "../../src/core/Sprite";
+import Color from "../../src/math/Color";
 
 export const ShipEvent = Object.freeze({
   TakeDamage : "take-damage",
@@ -12,7 +13,7 @@ export class Ship extends AnimatedSprite {
   constructor(gl) {
     let textures = [];
     for (let i = 1; i <= 16; i++) {
-      textures.push(TextureCache.get(`./dist/images/animation/ship/${i}.png`));
+      textures.push(TextureCache.get(`/assets/images/animation/ship/${i}.png`));
     }
     super(gl, textures, { duration: 0.5, loop: true, autoPlay: true });
     this.gl = gl;
@@ -32,7 +33,7 @@ export class Ship extends AnimatedSprite {
   initExplosion() {
     let textures = [];
     for (let i = 1; i <= 16; i++) {
-      textures.push(TextureCache.get(`./dist/images/animation/explosion/${i}.png`));
+      textures.push(TextureCache.get(`/assets/images/animation/explosion/${i}.png`));
     }
     this.explosion = new AnimatedSprite(this.gl, textures, {
       duration   : 0.5,
@@ -46,7 +47,7 @@ export class Ship extends AnimatedSprite {
   }
 
   setupGlow() {
-    let tex = TextureCache.get("./dist/images/glow.png");
+    let tex = TextureCache.get("/assets/images/glow.png");
     this.particle = new Particle(tex, {
       x            : this.globalPosition.x,
       y            : this.globalPosition.y + 25,
@@ -61,6 +62,7 @@ export class Ship extends AnimatedSprite {
       startScale   : 0.1,
       endScale     : 0.07,
       gravity      : [0.0, -0.8],
+      color        : new Color(255, 0.8 * 255, 0.3 * 255, 1),
     });
     this.addChild(this.particle);
     this.particle.play();
@@ -80,8 +82,8 @@ export class Ship extends AnimatedSprite {
   }
 
   setupHealth() {
-    let tex = TextureCache.get("./dist/images/heart.png");
-    for (let i = 0; i < this.health ; i++) {
+    let tex = TextureCache.get("/assets/images/heart.png");
+    for (let i = 0; i < this.health; i++) {
       let health = new Sprite(this.gl, tex);
       health.transform.scale.set(0.5, 0.5);
       health.transform.position.x = -70;
@@ -92,12 +94,13 @@ export class Ship extends AnimatedSprite {
   }
 
   takeDamage() {
+
     this.health -= 1;
     let hpLost = this.listHealth.pop();
     if (hpLost) {
       hpLost.destroy();
     }
-   
+
     if (this.health === 0) {
       this.onDead();
     }
@@ -106,7 +109,7 @@ export class Ship extends AnimatedSprite {
   onDead() {
     this.explosion.play();
     var sound = new Howl({
-      src    : ["../assets/audio/sfx_explosion.mp3"],
+      src    : ["/assets/audio/sfx_explosion.mp3"],
       volume : 0.5,
     });
     sound.play();

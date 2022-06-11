@@ -8,6 +8,7 @@ export default class Text extends Container {
     this.text = text;
     this.color = color;
     this.font = font;
+    this.alpha = 1;
   }
 
   _initBeforeFirstRender() {
@@ -17,7 +18,7 @@ export default class Text extends Container {
   }
 
   _render() {
-    this.shader.activateShader(this.text, this.size, this.color);
+    this.shader.activateShader(this.text, this.alpha);
   }
 
   updateTransform() {

@@ -5,6 +5,7 @@ import fragmentShaderUpdateSrc from "./shader/particle/particleUpdate.frag";
 import vertexShaderRenderSrc from "./shader/particle/particleRender.vert";
 import fragmentShaderRenderSrc from "./shader/particle/particleRender.frag";
 import { ParticleConfig } from "../core/Particle";
+import Texture from "../core/Texture";
 
 
 export default class ParticleShader extends SimpleShader {
@@ -273,6 +274,8 @@ export default class ParticleShader extends SimpleShader {
     }
 
     /* Create a texture for random values. */
+    // this.gl.enable(this.gl.BLEND);
+    // this.gl.blendFunc(this.gl.ONE, this.gl.ONE);
     this.rangeNoiseTexture = this.gl.createTexture();
     this.gl.bindTexture(this.gl.TEXTURE_2D, this.rangeNoiseTexture);
     this.gl.texImage2D(this.gl.TEXTURE_2D,
@@ -288,21 +291,22 @@ export default class ParticleShader extends SimpleShader {
     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.MIRRORED_REPEAT);
     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
-    this.gl.enable(this.gl.BLEND);
-    this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE);
 
+    // this.gl.enable(this.gl.BLEND);
+    // this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
     this.particleTexture = this.gl.createTexture();
     this.gl.bindTexture(this.gl.TEXTURE_2D, this.particleTexture);
-    this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA8, 32, 32, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.texture.texture.image);
-    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
+    this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.texture.texture.image);
     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
+    this.gl.generateMipmap(this.gl.TEXTURE_2D);
   }
 
   /**
    * @param {number} dt - time delta
    * @param {ParticleConfig} state - particle configuration
    */
-  renderParticle(dt, state) {
+  renderParticle(dt, state, blendType = Texture.BLEND_TYPE.NORMAL) {
     var numPart = state.bornParticles;
     /* Here's where birth rate parameter comes into play.
             We add to the number of active particles in the system
@@ -388,6 +392,8 @@ export default class ParticleShader extends SimpleShader {
 
     /* Begin transform feedback! */
     this.gl.beginTransformFeedback(this.gl.POINTS);
+    this.gl.enable(this.gl.BLEND);
+    this.gl.blendFunc(this.gl.ONE, this.gl.ONE);
     this.gl.drawArrays(this.gl.POINTS, 0, numPart);
     this.gl.endTransformFeedback();
     this.gl.disable(this.gl.RASTERIZER_DISCARD);
@@ -411,10 +417,27 @@ export default class ParticleShader extends SimpleShader {
       state.endScale,
     );
 
+    this.gl.uniform4f(
+      this.gl.getUniformLocation(this.renderProgram, "u_Color"),
+      state.color.glArray[0],
+      state.color.glArray[1],
+      state.color.glArray[2],
+      state.color.glArray[3],
+    );
+
     this.gl.enable(this.gl.BLEND);
-    this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
+    if (blendType === Texture.BLEND_TYPE.NORMAL) {
+      this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
+    }
+    else if (blendType === Texture.BLEND_TYPE.ADDITIVE) {
+      this.gl.blendFunc(this.gl.ONE, this.gl.ONE);
+    }
+    else if (blendType === Texture.BLEND_TYPE.MULTIPLY) {
+      this.gl.blendFunc(this.gl.DST_COLOR, this.gl.ZERO);
+    }
+
     this.gl.activeTexture(this.gl.TEXTURE0);
-    this.gl.bindTexture(this.gl.TEXTURE_2D, this.particleTexture);
+    this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture.texture);
     this.gl.uniform1i(
       this.gl.getUniformLocation(this.renderProgram, "u_Sprite"), 0,
     );

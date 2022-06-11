@@ -34,25 +34,25 @@ export class MyGame {
 
   load() {
     Font.defaultFont(this.core.gl);
-    Loader.addAnimationSprite("./dist/images/animation/ship/", 16);
-    Loader.addAnimationSprite("./dist/images/animation/boss/", 48);
-    Loader.addAnimationSprite("./dist/images/animation/explosion/", 20);
-    Loader.addSrc("./dist/images/sad.png");
-    Loader.addSrc("./dist/images/glow.png");
-    Loader.addSrc("./dist/images/bg_top.png");
-    Loader.addSrc("./dist/images/bg_bottom.png");
-    Loader.addSrc("./dist/images/redBullet.png");
-    Loader.addSrc("./dist/images/heart.png");
-    Loader.addSrc("./dist/images/bullet_enemy.png");
-    Loader.addSrc("./dist/images/bullet_purple.png");
-    Loader.addSrc("./dist/images/enemy/enemy_1.png");
-    Loader.addSrc("./dist/images/enemy/bulletEnemy.png");
-    Loader.addSrc("./dist/images/UI/gameOverLogo.png");
-    Loader.addSrc("./dist/images/UI/buttonStart.png");
-    Loader.addSrc("./dist/images/UI/buttonNext.png");
-    Loader.addSrc("./dist/images/UI/levelComplete.png");
-    Loader.addSrc("./dist/images/UI/logo.png");
-    Loader.addSrc("./dist/images/UI/bgWinner.png");
+    Loader.addAnimationSprite("/assets/images/animation/ship/", 16);
+    Loader.addAnimationSprite("/assets/images/animation/boss/", 48);
+    Loader.addAnimationSprite("/assets/images/animation/explosion/", 20);
+    Loader.addSrc("/assets/images/sad.png");
+    Loader.addSrc("/assets/images/glow.png");
+    Loader.addSrc("/assets/images/bg_top.png");
+    Loader.addSrc("/assets/images/bg_bottom.png");
+    Loader.addSrc("/assets/images/redBullet.png");
+    Loader.addSrc("/assets/images/heart.png");
+    Loader.addSrc("/assets/images/bullet_enemy.png");
+    Loader.addSrc("/assets/images/bullet_purple.png");
+    Loader.addSrc("/assets/images/enemy/enemy_1.png");
+    Loader.addSrc("/assets/images/enemy/bulletEnemy.png");
+    Loader.addSrc("/assets/images/UI/gameOverLogo.png");
+    Loader.addSrc("/assets/images/UI/buttonStart.png");
+    Loader.addSrc("/assets/images/UI/buttonNext.png");
+    Loader.addSrc("/assets/images/UI/levelComplete.png");
+    Loader.addSrc("/assets/images/UI/logo.png");
+    Loader.addSrc("/assets/images/UI/bgWinner.png");
     Loader.load(this.core.gl, this.init, this);
   }
 
@@ -108,7 +108,7 @@ export class MyGame {
 
   playBackgroundMusic() {
     this.music = new Howl({
-      src      : ["../assets/audio/music_bg.mp3"],
+      src      : ["/assets/audio/music_bg.mp3"],
       loop     : true,
       volume   : 1,
       autoplay : true,
@@ -126,7 +126,7 @@ export class MyGame {
           if (this.canShoot) {
             this.spawnBullet(this.ship.transform.position.x, this.ship.transform.position.y);
             this.sound = new Howl({
-              src    : ["../assets/audio/sfx_shoot.wav"],
+              src    : ["/assets/audio/sfx_shoot.wav"],
               volume : 0.5,
             });
 
@@ -147,7 +147,7 @@ export class MyGame {
   }
 
   spawnEnemy() {
-    let textureEnemy = TextureCache.get("./dist/images/enemy/enemy_1.png");
+    let textureEnemy = TextureCache.get("/assets/images/enemy/enemy_1.png");
     this.enemyManager = new EnemyManager(this.core.gl, this.numEnemy, textureEnemy, this.ship);
     this.core.stage.addChild(this.enemyManager);
     this.enemyManager.on(EnemyManagerEvent.OnClearEnemy, this.win, this);
@@ -174,7 +174,7 @@ export class MyGame {
 
   initBulletManager() {
     let shipEnemy = this.enemyManager.getEnemyShip();
-    let textureBullet = TextureCache.get("./dist/images/bullet_purple.png");
+    let textureBullet = TextureCache.get("/assets/images/bullet_purple.png");
     this.bulletManager = new BulletManager(this.core.gl, this.checkLevel, textureBullet, shipEnemy);
     this.core.stage.addChild(this.bulletManager);
 

@@ -12,14 +12,14 @@ export class GameUI extends Container {
   }
 
   initStartUI() {
-    let texturebgUI = TextureCache.get("./dist/images/UI/logo.png");
+    let texturebgUI = TextureCache.get("/assets/images/UI/logo.png");
     let bgUI = new Sprite(this.gl, texturebgUI);
     bgUI.transform.position.x = this.gl.canvas.width / 2;
     bgUI.transform.position.y = this.gl.canvas.height / 2 - 200;
     bgUI.transform.scale.set(1, 1);
     this.addChild(bgUI);
 
-    let textureButtonStart = TextureCache.get("./dist/images/UI/buttonStart.png");
+    let textureButtonStart = TextureCache.get("/assets/images/UI/buttonStart.png");
     let buttonStart = new Sprite(this.gl, textureButtonStart);
     buttonStart.transform.position.x = this.gl.canvas.width / 2;
     buttonStart.transform.position.y = this.gl.canvas.height / 2 + 50;
@@ -52,7 +52,7 @@ export class GameUI extends Container {
   }
 
   initGameOverUI() {
-    let texturebgUI = TextureCache.get("./dist/images/UI/gameOverLogo.png");
+    let texturebgUI = TextureCache.get("/assets/images/UI/gameOverLogo.png");
     let bgUI = new Sprite(this.gl, texturebgUI);
     bgUI.transform.position.x = this.gl.canvas.width / 2;
     bgUI.transform.position.y = this.gl.canvas.height / 2;
@@ -62,7 +62,7 @@ export class GameUI extends Container {
 
   initWinUI() {
 
-    let textureUI = TextureCache.get("./dist/images/UI/bgWinner.png");
+    let textureUI = TextureCache.get("/assets/images/UI/bgWinner.png");
     let bgUI2 = new Sprite(this.gl, textureUI);
     bgUI2.transform.position.x = this.gl.canvas.width / 2;
     bgUI2.transform.position.y = this.gl.canvas.height / 2 - 100;
@@ -76,14 +76,14 @@ export class GameUI extends Container {
       }
     });
 
-    let texturebgUI = TextureCache.get("./dist/images/UI/levelComplete.png");
+    let texturebgUI = TextureCache.get("/assets/images/UI/levelComplete.png");
     let bgUI = new Sprite(this.gl, texturebgUI);
     bgUI.transform.position.x = this.gl.canvas.width / 2;
     bgUI.transform.position.y = this.gl.canvas.height / 2 - 100;
     bgUI.transform.scale.set(0.1, 0.1);
     this.addChild(bgUI);
 
-    let textureButtonStart = TextureCache.get("./dist/images/UI/buttonNext.png");
+    let textureButtonStart = TextureCache.get("/assets/images/UI/buttonNext.png");
     let buttonStart = new Sprite(this.gl, textureButtonStart);
     buttonStart.transform.position.x = this.gl.canvas.width / 2;
     buttonStart.transform.position.y = this.gl.canvas.height / 2 + 80;

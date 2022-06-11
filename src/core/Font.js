@@ -52,7 +52,7 @@ export default class Font extends Texture {
           "!" : { x: 48, y: 32, width: 8 },
           "?" : { x: 56, y: 32, width: 8 },
         },
-      }, "dist/images/font_default.png");
+      }, "/assets/images/font_default.png");
     }
     return this._defaultFont;
   }

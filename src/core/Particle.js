@@ -1,6 +1,8 @@
 import Container from "./Container";
 import Ticker from "../system/ticker";
 import ParticleShader from "../renderers/ParticleShader";
+import Color from "../math/Color";
+import Texture from "./Texture";
 
 export class ParticleConfig {
   static default = {
@@ -17,6 +19,7 @@ export class ParticleConfig {
     startScale   : 1,
     endScale     : 0,
     gravity      : [0, 1],
+    color        : Color.WHITE,
   };
 
   constructor() {
@@ -34,6 +37,7 @@ export class ParticleConfig {
     this.startScale = defaultConfig.startScale;
     this.endScale = defaultConfig.endScale;
     this.gravity = defaultConfig.gravity;
+    this.color = defaultConfig.color;
   }
 }
 export default class Particle extends Container {
@@ -44,6 +48,7 @@ export default class Particle extends Container {
     this.texture = texture;
     this.config = config;
     this.canPlay = false;
+    this.blendType = Texture.BLEND_TYPE.NORMAL;
   }
 
   _initBeforeFirstRender() {
@@ -87,7 +92,7 @@ export default class Particle extends Container {
 
   _render() {
     if (this.canPlay) {
-      this.shader.renderParticle(Ticker.SharedTicker.deltaTime, this.state);
+      this.shader.renderParticle(Ticker.SharedTicker.deltaTime, this.state, this.blendType);
     }
   }
 

@@ -20,7 +20,7 @@ export class Bullet extends Sprite {
   initExplosion() {
     let textures = [];
     for (let i = 1; i <= 16; i++) {
-      textures.push(TextureCache.get(`./dist/images/animation/explosion/${i}.png`));
+      textures.push(TextureCache.get(`/assets/images/animation/explosion/${i}.png`));
     }
     this.explosion = new AnimatedSprite(this.gl, textures, {
       duration   : 0.5,
@@ -62,7 +62,6 @@ export class Bullet extends Sprite {
 
   onEnemyDead() {
     this.explosion.play();
-    console.log("aa");
   }
 
 }
